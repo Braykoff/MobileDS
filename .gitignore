@@ -24,3 +24,6 @@ ios/
 
 expo-env.d.ts
 # @end expo-cli
+
+# Ignore vscode settings
+.vscode/
