@@ -7,7 +7,7 @@ import * as SystemUI from "expo-system-ui";
 import { scale, verticalScale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
 import { GithubLink } from "@/constants/Links";
-import { isValidTeamNumber, teamNumberToIPAddress } from "@/components/frc/IPHandler";
+import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/components/frc/IPHandler";
 
 SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
 
@@ -18,12 +18,16 @@ SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts 
 function beginConnection(input: string) {
   if (isValidTeamNumber(input)) {
     // User entered a team number
-    var ip = teamNumberToIPAddress(input);
-    Alert.alert(ip);
-  } else {
-    // Invalid input
-    Alert.alert("Invalid!");
+    input = teamNumberToIPAddress(input);
+  } else if (!isValidHost(input)) {
+    // Not a valid host address
+    Alert.alert(
+      "Invalid RoboRio Address", 
+      "Please enter a valid team number (0 - 25599), ip address (such as 10.71.53.2), or hostname (such as roboRIO-0000-frc.local)");
+    return;
   }
+
+  // TODO notify state manager
 }
 
 /**
@@ -132,6 +136,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.glass.accentColor,
     borderRadius: scale(5),
     paddingHorizontal: scale(2),
+    fontSize: scale(13),
     flex: 3
   },
   /* 'Connect' and 'Github' buttons */
