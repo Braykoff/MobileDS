@@ -1,12 +1,34 @@
-import { Text ,View, StyleSheet, Alert, Dimensions } from "react-native";
-import { LargeButton } from "@/components/LargeButton";
+import { Text ,View, StyleSheet, Alert, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
+import { openURL } from "expo-linking";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect, useState } from "react";
+import * as SystemUI from "expo-system-ui";
+import { scale, verticalScale } from "react-native-size-matters";
+import { Colors } from "@/constants/Colors";
+import { GithubLink } from "@/constants/Links";
+import { isValidTeamNumber, teamNumberToIPAddress } from "@/components/frc/IPHandler";
 
-SplashScreen.preventAutoHideAsync(); // Keep showing splash screen
+SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
 
+/**
+ * Called once "Connect" button is pressed.
+ * @param input The "team number" input value.
+ */
+function beginConnection(input: string) {
+  if (isValidTeamNumber(input)) {
+    // User entered a team number
+    var ip = teamNumberToIPAddress(input);
+    Alert.alert(ip);
+  } else {
+    // Invalid input
+    Alert.alert("Invalid!");
+  }
+}
+
+/**
+ * @returns The home (connection) page.
+ */
 export default function Index() {
   // Load fonts
   const [loaded, error] = useFonts({
@@ -15,6 +37,9 @@ export default function Index() {
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf")
   });
 
+  // Set background color (async)
+  SystemUI.setBackgroundColorAsync(Colors.glass.background);
+
   // Hide splash screen once fonts are loaded
   useEffect(() => {
     if (loaded || error) {
@@ -22,54 +47,104 @@ export default function Index() {
     }
   }, [loaded, error]);
 
+  // Team number entry state
+  const [teamNumberInput, setTeamNumberInput] = useState("");
+
+  // Button hover states
+  const [connectBttnHover, setConnectBttnHover] = useState(false);
+  const [githubBttnHover, setGithubBttnHover] = useState(false);
+
   return (
-    // Entire screen
-    <SafeAreaView style={styles.outerContainer} edges={[]}>
-      { /* Vertical column */}
+    // Full screen container
+    <View style={styles.outerContainer}>
+      { /* Vertical container */ }
       <View style={styles.verticalContainer}>
-        { /* Title */}
-        <Text style={styles.title} adjustsFontSizeToFit={true} numberOfLines={1}>MobileDS</Text>
-        {/* First button row */}
-        <View style={styles.buttonRow}>
-          <LargeButton onclick={() => alert("!") } color={"darkgray"} label={"Button 1"} />
-          <LargeButton onclick={() => alert("!") } color={"darkgray"} label={"Button 1"} />
-        </View>
-        {/* Second button row */}
-        <View style={styles.buttonRow}>
-          <LargeButton onclick={() => alert("!") } color={"darkgray"} label={"Button 1"} />
-          <LargeButton onclick={() => alert("!") } color={"darkgray"} label={"Button 1"} />
-        </View>
+        { /* Header text */}
+        <Text style={styles.header}>MobileDS</Text>
+        { /* RobRIO details entry */}
+        <TextInput 
+          editable 
+          style={styles.ipInput} 
+          placeholder="Team # or IP"
+          autoComplete="off"
+          autoCorrect={false}
+          autoCapitalize="none"
+          spellCheck={false}
+          onChangeText={ (text) => setTeamNumberInput(text) }
+        />
+        { /* Connect button */}
+        <Pressable 
+          style={[styles.buttonContainer, { backgroundColor: !connectBttnHover ? Colors.glass.accentColor : Colors.glass.accentColorDark }]}
+          onPressIn={ () => setConnectBttnHover(true) }
+          onPressOut={ () => setConnectBttnHover(false) }
+          onPress={ () => beginConnection(teamNumberInput) }
+        >
+          <Text style={styles.button}>Connect</Text>
+        </Pressable>
+        { /* GitHub button */}
+        <Pressable 
+          style={[styles.buttonContainer, { backgroundColor: !githubBttnHover ? Colors.glass.accentColor : Colors.glass.accentColorDark }]}
+          onPressIn={ () => setGithubBttnHover(true) }
+          onPressOut={ () => setGithubBttnHover(false) }
+          onPress={ () => openURL(GithubLink) }
+        >
+          <Text style={styles.button}>Open GitHub</Text>
+        </Pressable>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  /* Outer container */
+  /* Full screen container */
   outerContainer: {
-    flex: 1,
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
-  /* Vertical container */
+  /* Vertical Container */
   verticalContainer: {
-    width: "80%",
-    height: "70%",
-    alignItems: "center",
+    width: scale(250),
+    height: verticalScale(190),
+    marginBottom: verticalScale(12),
     flexDirection: "column",
   },
-  /* Title text */
-  title: {
-    flex: 2,
-    width: "100%",
-    textAlign: "center",
+  /* Header */
+  header: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 100
+    color: Colors.glass.textColor,
+    flex: 6,
+    textAlign: "center",
+    verticalAlign: "middle",
+    fontSize: scale(40)
   },
-  /* Rows of buttons */
-  buttonRow: {
-    flex: 5,
-    flexDirection: "row",
-    width: "100%",
+  /* IP Address input entry */
+  ipInput: {
+    fontFamily: "Montserrat-Regular",
+    backgroundColor: Colors.glass.inputBackground,
+    color: Colors.glass.inputTextColor,
+    margin: scale(6),
+    borderWidth: 1.5,
+    borderColor: Colors.glass.accentColor,
+    borderRadius: scale(5),
+    paddingHorizontal: scale(2),
+    flex: 3
+  },
+  /* 'Connect' and 'Github' buttons */
+  buttonContainer: {
+    flex: 4,
+    margin: scale(3),
+    justifyContent: "center",
+    borderRadius: scale(5)
+  },
+  button: {
+    fontFamily: "Montserrat-Regular",
+    textAlign: "center",
+    color: Colors.glass.textColor,
+    fontSize: scale(15)
   }
 });
