@@ -1,8 +1,8 @@
 /** Regex to validate a string is only numbers. */
 const regexNumberOnlyValidator = /^\d+$/;
 
-/** Regex to validate a string is only numbers, letters, and periods. */
-const regexHostAddress = /^[\.a-zA-Z0-9]*$/;
+/** Regex to validate a string is only numbers, letters, periods, and dashes. */
+const regexHostAddress = /^[\.\-a-zA-Z0-9]*$/;
 
 /** Regex to check for two consecutive periods. */
 const regexDoublePeriods = /\.\./;
@@ -60,7 +60,7 @@ export function teamNumberToIPAddress(teamNumber: string): string {
 export function isValidHost(input: string): boolean {
   return (
     input.length >= 1 && // Check for empty string
-    regexHostAddress.test(input) && // Check if only has letters, numbers, and periods
+    regexHostAddress.test(input) && // Check if only has letters, numbers, periods, and dashes
     !regexDoublePeriods.test(input) && // Check for multiple consecutive periods
     input.indexOf(".") != -1 && // Check that periods exist
     input.at(0) != "." && // Check for leading period

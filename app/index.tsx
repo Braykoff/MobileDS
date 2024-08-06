@@ -1,4 +1,4 @@
-import { Text ,View, StyleSheet, Alert, TextInput, Pressable } from "react-native";
+import { Text, View, StyleSheet, Alert, TextInput, Pressable } from "react-native";
 import { useFonts } from "expo-font";
 import { openURL } from "expo-linking";
 import * as SplashScreen from "expo-splash-screen";
@@ -6,8 +6,9 @@ import { useEffect, useState } from "react";
 import * as SystemUI from "expo-system-ui";
 import { scale, verticalScale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
-import { GithubLink } from "@/constants/Links";
+import { GithubLink } from "@/constants/Constants";
 import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/components/frc/IPHandler";
+import { Router, useRouter } from "expo-router";
 
 SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
 
@@ -15,7 +16,7 @@ SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts 
  * Called once "Connect" button is pressed.
  * @param input The "team number" input value.
  */
-function beginConnection(input: string) {
+function beginConnection(input: string, router: Router) {
   if (isValidTeamNumber(input)) {
     // User entered a team number
     input = teamNumberToIPAddress(input);
@@ -27,13 +28,14 @@ function beginConnection(input: string) {
     return;
   }
 
-  // TODO notify state manager
+  // Go to controller tabs
+  router.push("/controller/networktable");
 }
 
 /**
  * @returns The home (connection) page.
  */
-export default function Index() {
+export default function IndexScreen() {
   // Load fonts
   const [loaded, error] = useFonts({
     "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -50,6 +52,9 @@ export default function Index() {
       SplashScreen.hideAsync();
     }
   }, [loaded, error]);
+
+  // Expo router
+  const router = useRouter();
 
   // Team number entry state
   const [teamNumberInput, setTeamNumberInput] = useState("");
@@ -81,7 +86,7 @@ export default function Index() {
           style={[styles.buttonContainer, { backgroundColor: !connectBttnHover ? Colors.glass.accentColor : Colors.glass.accentColorDark }]}
           onPressIn={ () => setConnectBttnHover(true) }
           onPressOut={ () => setConnectBttnHover(false) }
-          onPress={ () => beginConnection(teamNumberInput) }
+          onPress={ () => beginConnection(teamNumberInput, router) }
         >
           <Text style={styles.button}>Connect</Text>
         </Pressable>
@@ -100,7 +105,7 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  /* Full screen container */
+  /** Full screen container */
   outerContainer: {
     position: "absolute",
     left: 0,
@@ -110,14 +115,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  /* Vertical Container */
+  /** Vertical Container */
   verticalContainer: {
     width: scale(250),
     height: verticalScale(190),
     marginBottom: verticalScale(12),
     flexDirection: "column",
   },
-  /* Header */
+  /** Header */
   header: {
     fontFamily: "Montserrat-Bold",
     color: Colors.glass.textColor,
@@ -126,7 +131,7 @@ const styles = StyleSheet.create({
     verticalAlign: "middle",
     fontSize: scale(40)
   },
-  /* IP Address input entry */
+  /** IP Address input entry */
   ipInput: {
     fontFamily: "Montserrat-Regular",
     backgroundColor: Colors.glass.inputBackground,
@@ -139,7 +144,7 @@ const styles = StyleSheet.create({
     fontSize: scale(13),
     flex: 3
   },
-  /* 'Connect' and 'Github' buttons */
+  /** 'Connect' and 'Github' buttons */
   buttonContainer: {
     flex: 4,
     margin: scale(3),
