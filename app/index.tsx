@@ -8,7 +8,7 @@ import { scale, verticalScale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
 import { GithubLink } from "@/constants/Constants";
 import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/components/frc/IPHandler";
-import { Router, useRouter } from "expo-router";
+import { router } from "expo-router";
 
 SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
 
@@ -16,7 +16,7 @@ SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts 
  * Called once "Connect" button is pressed.
  * @param input The "team number" input value.
  */
-function beginConnection(input: string, router: Router) {
+function beginConnection(input: string) {
   if (isValidTeamNumber(input)) {
     // User entered a team number
     input = teamNumberToIPAddress(input);
@@ -29,7 +29,7 @@ function beginConnection(input: string, router: Router) {
   }
 
   // Go to controller tabs
-  router.push("/controller/networktable");
+  router.replace("/controller");
 }
 
 /**
@@ -52,9 +52,6 @@ export default function IndexScreen() {
       SplashScreen.hideAsync();
     }
   }, [loaded, error]);
-
-  // Expo router
-  const router = useRouter();
 
   // Team number entry state
   const [teamNumberInput, setTeamNumberInput] = useState("");
@@ -86,7 +83,7 @@ export default function IndexScreen() {
           style={[styles.buttonContainer, { backgroundColor: !connectBttnHover ? Colors.glass.accentColor : Colors.glass.accentColorDark }]}
           onPressIn={ () => setConnectBttnHover(true) }
           onPressOut={ () => setConnectBttnHover(false) }
-          onPress={ () => beginConnection(teamNumberInput, router) }
+          onPress={ () => beginConnection(teamNumberInput) }
         >
           <Text style={styles.button}>Connect</Text>
         </Pressable>

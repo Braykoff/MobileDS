@@ -1,17 +1,19 @@
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Drawer } from "expo-router/drawer";
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import NetworkTableScreen from "./networktable";
+
+export type ControllerDrawerParamList = {
+    NetworkTable: undefined
+};
+
+const Drawer = createDrawerNavigator<ControllerDrawerParamList>();
 
 export default function Layout() {
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <Drawer>
-                <Drawer.Screen 
-                    name="networktable"
-                    options = {{
-                        drawerLabel: "NetworkTables"
-                    }}
-                />
-            </Drawer>
-        </GestureHandlerRootView>
+        <NavigationContainer independent={ true }>
+            <Drawer.Navigator initialRouteName="NetworkTable">
+                <Drawer.Screen name="NetworkTable" component={ NetworkTableScreen } />
+            </Drawer.Navigator>
+        </NavigationContainer>
     )
 }

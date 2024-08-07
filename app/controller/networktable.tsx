@@ -1,12 +1,20 @@
-import { useNavigation } from "expo-router";
-import { Text } from "react-native";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { router } from "expo-router";
+import { Pressable, Text, View } from "react-native";
+import { ControllerDrawerParamList } from "./_layout";
 
-export default function NetworkTableScreen() {
-    const navigator = useNavigation();
+type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "NetworkTable">;
+type Props = { navigation: NetworkTableScreenNavigationProp }
 
-    navigator.setOptions({ title: "bogus123" });
-
+export default function NetworkTableScreen({ navigation } : Props) {
     return (
-        <Text>Hello world</Text>
+        <View>
+            <Pressable onPress={ () => { router.replace("/") }}>
+                <Text>Test</Text>
+            </Pressable>
+            <Pressable onPress = { () => { navigation.setOptions({title: "bogus!"}) }}>
+                <Text>Test 2</Text>
+            </Pressable>
+        </View>
     );
 }
