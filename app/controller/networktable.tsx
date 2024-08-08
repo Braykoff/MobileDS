@@ -12,7 +12,7 @@ export default function NetworkTableScreen({ navigation } : Props) {
             <Pressable onPress={ () => { router.replace("/") }}>
                 <Text>Test</Text>
             </Pressable>
-            <Pressable onPress = { () => { navigation.setOptions({title: "bogus!"}) }}>
+            <Pressable onPress = { () => { navigation.setOptions({headerTitle: "bogus!"}) }}>
                 <Text>Test 2</Text>
             </Pressable>
         </View>

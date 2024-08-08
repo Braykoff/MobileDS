@@ -8,15 +8,19 @@ import { scale, verticalScale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
 import { GithubLink } from "@/constants/Constants";
 import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/components/frc/IPHandler";
-import { router } from "expo-router";
+import { MainStackParamList } from "./_layout";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
+
+type HomeScreenNavigationProps = NativeStackNavigationProp<MainStackParamList, "Home">;
+type Props = { navigation: HomeScreenNavigationProps }
 
 /**
  * Called once "Connect" button is pressed.
  * @param input The "team number" input value.
  */
-function beginConnection(input: string) {
+function beginConnection(input: string, navigation: HomeScreenNavigationProps) {
   if (isValidTeamNumber(input)) {
     // User entered a team number
     input = teamNumberToIPAddress(input);
@@ -29,13 +33,14 @@ function beginConnection(input: string) {
   }
 
   // Go to controller tabs
-  router.replace("/controller");
+  //router.replace("/controller");
+  navigation.navigate("ControllerDrawer");
 }
 
 /**
  * @returns The home (connection) page.
  */
-export default function IndexScreen() {
+export default function IndexScreen({ navigation } : Props) {
   // Load fonts
   const [loaded, error] = useFonts({
     "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -52,6 +57,8 @@ export default function IndexScreen() {
       SplashScreen.hideAsync();
     }
   }, [loaded, error]);
+
+  //const navigation = useNavigation();
 
   // Team number entry state
   const [teamNumberInput, setTeamNumberInput] = useState("");
@@ -83,7 +90,7 @@ export default function IndexScreen() {
           style={[styles.buttonContainer, { backgroundColor: !connectBttnHover ? Colors.glass.accentColor : Colors.glass.accentColorDark }]}
           onPressIn={ () => setConnectBttnHover(true) }
           onPressOut={ () => setConnectBttnHover(false) }
-          onPress={ () => beginConnection(teamNumberInput) }
+          onPress={ () => beginConnection(teamNumberInput, navigation) }
         >
           <Text style={styles.button}>Connect</Text>
         </Pressable>

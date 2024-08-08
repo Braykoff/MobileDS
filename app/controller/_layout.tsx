@@ -8,12 +8,10 @@ export type ControllerDrawerParamList = {
 
 const Drawer = createDrawerNavigator<ControllerDrawerParamList>();
 
-export default function Layout() {
+export default function ControllerLayout() {
     return (
-        <NavigationContainer independent={ true }>
-            <Drawer.Navigator initialRouteName="NetworkTable">
-                <Drawer.Screen name="NetworkTable" component={ NetworkTableScreen } />
-            </Drawer.Navigator>
-        </NavigationContainer>
+        <Drawer.Navigator initialRouteName="NetworkTable">
+            <Drawer.Screen name="NetworkTable" component={ NetworkTableScreen } />
+        </Drawer.Navigator>
     )
 }
