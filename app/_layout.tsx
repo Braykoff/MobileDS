@@ -1,22 +1,38 @@
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import IndexScreen from ".";
+import * as SplashScreen from "expo-splash-screen";
 import ControllerLayout from "./controller/_layout";
+import IndexScreen from "./index";
+import { useFonts } from "expo-font";
+import { useEffect } from "react";
+
+SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
 
 export type MainStackParamList = {
-    Home: undefined,
-    ControllerDrawer: undefined
+    index: undefined,
+    controller: undefined
 }
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
 export default function MainLayout() {
-    return (
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName="Home">
-                <Stack.Screen name="Home" component={ IndexScreen } />
-                <Stack.Screen name="ControllerDrawer" component={ ControllerLayout } options={{ headerShown: false }} />
-            </Stack.Navigator>
-        </NavigationContainer>
-    )
+  // Load fonts
+  const [loaded, error] = useFonts({
+    "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.ttf"),
+    "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf")
+  });
+
+  // Hide splash screen once fonts are loaded
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  return (
+    <Stack.Navigator initialRouteName="index">
+      <Stack.Screen name="index" component={ IndexScreen } options={{ headerShown: false }} />
+      <Stack.Screen name="controller" component={ ControllerLayout } options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
 }

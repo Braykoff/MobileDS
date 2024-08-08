@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { ControllerDrawerParamList } from "./_layout";
 
-type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "NetworkTable">;
+type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "networktable">;
 type Props = { navigation: NetworkTableScreenNavigationProp }
 
 export default function NetworkTableScreen({ navigation } : Props) {

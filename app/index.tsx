@@ -1,8 +1,6 @@
 import { Text, View, StyleSheet, Alert, TextInput, Pressable } from "react-native";
-import { useFonts } from "expo-font";
 import { openURL } from "expo-linking";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as SystemUI from "expo-system-ui";
 import { scale, verticalScale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
@@ -10,10 +8,9 @@ import { GithubLink } from "@/constants/Constants";
 import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/components/frc/IPHandler";
 import { MainStackParamList } from "./_layout";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RobotState } from "@/components/frc/StateManager";
 
-SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
-
-type HomeScreenNavigationProps = NativeStackNavigationProp<MainStackParamList, "Home">;
+type HomeScreenNavigationProps = NativeStackNavigationProp<MainStackParamList, "index">;
 type Props = { navigation: HomeScreenNavigationProps }
 
 /**
@@ -33,32 +30,16 @@ function beginConnection(input: string, navigation: HomeScreenNavigationProps) {
   }
 
   // Go to controller tabs
-  //router.replace("/controller");
-  navigation.navigate("ControllerDrawer");
+  RobotState.Address = input;
+  navigation.replace("controller");
 }
 
 /**
  * @returns The home (connection) page.
  */
 export default function IndexScreen({ navigation } : Props) {
-  // Load fonts
-  const [loaded, error] = useFonts({
-    "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.ttf"),
-    "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
-    "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf")
-  });
-
   // Set background color (async)
   SystemUI.setBackgroundColorAsync(Colors.glass.background);
-
-  // Hide splash screen once fonts are loaded
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  //const navigation = useNavigation();
 
   // Team number entry state
   const [teamNumberInput, setTeamNumberInput] = useState("");
