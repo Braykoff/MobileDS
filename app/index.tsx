@@ -90,7 +90,7 @@ export default function IndexScreen({ navigation } : Props) {
 }
 
 const styles = StyleSheet.create({
-  /** Full screen container */
+  // Full screen container
   outerContainer: {
     position: "absolute",
     left: 0,
@@ -100,14 +100,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  /** Vertical Container */
+  // Vertical container
   verticalContainer: {
     width: scale(250),
     height: verticalScale(190),
     marginBottom: verticalScale(12),
     flexDirection: "column",
   },
-  /** Header */
+  // Header
   header: {
     fontFamily: "Montserrat-Bold",
     color: Colors.glass.textColor,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     verticalAlign: "middle",
     fontSize: scale(40)
   },
-  /** IP Address input entry */
+  // IP Address input entry
   ipInput: {
     fontFamily: "Montserrat-Regular",
     backgroundColor: Colors.glass.inputBackground,
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     fontSize: scale(13),
     flex: 3
   },
-  /** 'Connect' and 'Github' buttons */
+  // 'Connect' and 'Github' buttons
   buttonContainer: {
     flex: 4,
     margin: scale(3),

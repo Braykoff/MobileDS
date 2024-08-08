@@ -12,5 +12,11 @@ export const Colors = {
     inputTextColor: "#303030",
     accentColor: "#424277",
     accentColorDark: "#323268"
+  },
+  /**
+   * Generic colors
+   */
+  generic: {
+    darkGray: "#363636"
   }
 };

@@ -1,4 +1,4 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator, NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import * as SplashScreen from "expo-splash-screen";
 import * as SystemUI from 'expo-system-ui';
 import ControllerLayout from "./controller/_layout";
@@ -9,6 +9,7 @@ import { Colors } from "@/constants/Colors";
 
 SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
 
+// Init stack
 export type MainStackParamList = {
     index: undefined,
     controller: undefined
@@ -16,6 +17,9 @@ export type MainStackParamList = {
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
+/**
+ * @returns The app's main Stack layout
+ */
 export default function MainLayout() {
   // Set default background
   SystemUI.setBackgroundColorAsync( Colors.glass.background );
@@ -36,9 +40,16 @@ export default function MainLayout() {
 
   // Build default Stack navigator
   return (
-    <Stack.Navigator initialRouteName="index">
+    <Stack.Navigator initialRouteName="index" screenOptions={ ScreenOptions }>
       <Stack.Screen name="index" component={ IndexScreen } options={{ headerShown: false }} />
       <Stack.Screen name="controller" component={ ControllerLayout } options={{ headerShown: false }} />
     </Stack.Navigator>
   );
+}
+
+// Stack options
+const ScreenOptions: NativeStackNavigationOptions = {
+  contentStyle: {
+    backgroundColor: Colors.glass.background
+  }
 }

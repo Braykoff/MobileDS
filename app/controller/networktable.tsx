@@ -1,12 +1,16 @@
-import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
-import { ControllerDrawerParamList } from "./_layout";
 import { RobotState } from "@/components/frc/StateManager";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { ControllerDrawerParamList } from "./_layout";
 
-type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "networktable">;
+// Init navigation
+type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "NetworkTables">;
 type Props = { navigation: NetworkTableScreenNavigationProp }
 
+/**
+ * The screen for all viewing the NetworkTables data.
+ */
 export default function NetworkTableScreen({ navigation } : Props) {
     return (
         <View>
