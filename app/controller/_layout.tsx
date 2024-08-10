@@ -1,6 +1,6 @@
 import { createDrawerNavigator, DrawerNavigationOptions } from "@react-navigation/drawer";
 import NetworkTableScreen from "./networktable";
-import { RobotState } from "@/components/frc/StateManager";
+import { RobotState } from "@/util/StateManager";
 import { NotConnectedSymbol } from "@/constants/Constants";
 import { Colors } from "@/constants/Colors";
 import { scale } from "react-native-size-matters";

@@ -8,7 +8,7 @@ import { GithubLink } from "@/constants/Constants";
 import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/components/frc/IPHandler";
 import { MainStackParamList } from "./_layout";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RobotState } from "@/components/frc/StateManager";
+import { RobotState } from "@/util/StateManager";
 
 type HomeScreenNavigationProps = NativeStackNavigationProp<MainStackParamList, "index">;
 type Props = { navigation: HomeScreenNavigationProps }

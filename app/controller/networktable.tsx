@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
-import { RobotState } from "@/components/frc/StateManager";
+import { RobotState } from "@/util/StateManager";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { ControllerDrawerParamList } from "./_layout";
 
