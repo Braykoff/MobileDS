@@ -8,7 +8,6 @@ import { GithubLink } from "@/constants/Constants";
 import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/util/IPHandler";
 import { MainStackParamList } from "./_layout";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RobotState } from "@/util/StateManager";
 import { NTConnection, setCurrentNTConnection } from "@/util/nt/NTComms";
 
 type HomeScreenNavigationProps = NativeStackNavigationProp<MainStackParamList, "index">;
@@ -34,7 +33,6 @@ function beginConnection(input: string, navigation: HomeScreenNavigationProps) {
   setCurrentNTConnection(new NTConnection(input));
 
   // Go to controller tabs
-  RobotState.Address = input;
   navigation.replace("controller");
 }
 

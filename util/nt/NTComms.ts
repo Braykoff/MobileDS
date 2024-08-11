@@ -2,10 +2,12 @@ import { NTName } from "@/constants/Constants";
 import { NTTable, NTTopic } from "./NTData";
 import { decodeMulti } from "@msgpack/msgpack";
 import { createTypedNTTopic } from "./NTTypes";
+import { events, GlobalEventEmitter } from "../GlobalEventEmitter";
 
 export class NTConnection {
   private socket: WebSocket;
-  private unsecureAddress: string;
+  public readonly address: string;
+  private readonly unsecureAddress: string;
   private closingSocket = false; // If we don't want the socket to try and reconnect
   private pingIntervalId: NodeJS.Timeout | null = null; // Interval ID of the ping interval
   private reconnectIntervalID: NodeJS.Timeout | null = null; // Interval ID of the reconnect timeout
@@ -14,9 +16,13 @@ export class NTConnection {
   public rootNetworkTable = new NTTable(null, "NetworkTables");
   private ntTopics: { [ topicId: number ]: NTTopic } = {}; // Maps subscribe ids to NTTopics
   public ntChanges = 0; // increases on every NT change, UI is hooked to this value's changes
+
+  /**  */
+  //public ntConnectionStatusState: React.Dispatch<React.SetStateAction<boolean>> | null = null;
   
   public constructor(address: string) {
     // Set addresses
+    this.address = address;
     var secureAddress = `wss://${address}:5811/nt/${NTName}`;
     this.unsecureAddress = `ws://${address}:5810/nt/${NTName}`;
     
@@ -45,11 +51,15 @@ export class NTConnection {
           "subuid": 0, // Used to unsubscribe
           "options": {"prefix": true}
         }
-      }]))
+      }]));
+
+     GlobalEventEmitter.emit(events.onNTConnectionStatusChanged);
     };
     
     // When the socket closes
     this.socket.onclose = () => {
+      GlobalEventEmitter.emit(events.onNTConnectionStatusChanged);
+
       // Clean up cache
       this.rootNetworkTable = new NTTable(null, "NetworkTables");
       this.ntTopics = {};
@@ -137,12 +147,12 @@ export class NTConnection {
       }
     }
   }
-  
-  /** Returns if the websocket is connected or not. */
+
+  /** Checks if the WebSocket is OPEN. */
   public isConnected(): boolean {
-    return (this.socket.readyState == WebSocket.OPEN);
+    return (this.socket.readyState === WebSocket.OPEN);
   }
-  
+
   /** Disconnect the websocket, and don't try to reconnect. */
   public disconnect() {
     this.closingSocket = true;

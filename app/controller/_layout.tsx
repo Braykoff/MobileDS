@@ -1,11 +1,11 @@
 import { createDrawerNavigator, DrawerNavigationOptions } from "@react-navigation/drawer";
 import NetworkTableScreen from "./networktable";
-import { RobotState } from "@/util/StateManager";
 import { NotConnectedSymbol } from "@/constants/Constants";
 import { Colors } from "@/constants/Colors";
 import { scale } from "react-native-size-matters";
 import { Ionicons } from "@expo/vector-icons";
 import CamerasScreen from "./cameras";
+import { getCurrentNTConnection } from "@/util/nt/NTComms";
 
 // Init drawer
 export type ControllerDrawerParamList = {
@@ -19,8 +19,10 @@ const Drawer = createDrawerNavigator<ControllerDrawerParamList>();
  */
 export default function ControllerLayout() {
   // Header title setup
+  var nt = getCurrentNTConnection();
+
   const onLoadTitle: DrawerNavigationOptions = {
-    headerTitle: `${NotConnectedSymbol} ${RobotState.Address}`,
+    headerTitle: `${NotConnectedSymbol} ${ (nt != null) ? nt.address : "" }`,
   }
 
   // Layout
