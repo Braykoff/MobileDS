@@ -2,7 +2,7 @@ import { NTName } from "@/constants/Constants";
 import { NTTable, NTTopic } from "./NTData";
 import { decodeMulti } from "@msgpack/msgpack";
 import { createTypedNTTopic } from "./NTTypes";
-import { events, GlobalEventEmitter } from "../GlobalEventEmitter";
+import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
 
 export class NTConnection {
   private socket: WebSocket;
@@ -17,8 +17,7 @@ export class NTConnection {
   private ntTopics: { [ topicId: number ]: NTTopic } = {}; // Maps subscribe ids to NTTopics
   public ntChanges = 0; // increases on every NT change, UI is hooked to this value's changes
 
-  /**  */
-  //public ntConnectionStatusState: React.Dispatch<React.SetStateAction<boolean>> | null = null;
+  public readonly events = new EventEmitter();
   
   public constructor(address: string) {
     // Set addresses
@@ -53,12 +52,12 @@ export class NTConnection {
         }
       }]));
 
-     GlobalEventEmitter.emit(events.onNTConnectionStatusChanged);
+     this.events.emit("connectionStatusChanged");
     };
     
     // When the socket closes
     this.socket.onclose = () => {
-      GlobalEventEmitter.emit(events.onNTConnectionStatusChanged);
+      this.events.emit("connectionStatusChanged");
 
       // Clean up cache
       this.rootNetworkTable = new NTTable(null, "NetworkTables");

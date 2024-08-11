@@ -1,12 +1,10 @@
 import { router } from "expo-router";
-import { NativeEventEmitter, NativeModules, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { ControllerDrawerParamList } from "./_layout";
-import { useEffect, useState } from "react";
 import { getCurrentNTConnection, NTConnection } from "@/util/nt/NTComms";
-import { ConnectedSymbol, NotConnectedSymbol } from "@/constants/Constants";
-import { events, GlobalEventEmitter } from "@/util/GlobalEventEmitter";
 import { ExceptionText } from "@/components/ExceptionText";
+import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 
 // Init navigation
 type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "NetworkTables">;
@@ -24,11 +22,8 @@ export default function NetworkTableScreen({ navigation } : Props) {
         return ExceptionText("There is no current NT connection");
     }
 
-    GlobalEventEmitter.addListener(events.onNTConnectionStatusChanged, () => {
-        console.log("emitted");
-        var icon = (ntConnection.isConnected()) ? ConnectedSymbol : NotConnectedSymbol;
-        navigation.setOptions({headerTitle: `${icon} ${ntConnection.address}`});
-        navigation.setOptions({headerTitleStyle: { color: (ntConnection.isConnected()) ? "green" : "red" }});
+    ntConnection.events.addListener("connectionStatusChanged", () => {
+        navigation.setOptions(createDrawerOptions(ntConnection));
     });
 
     return (
