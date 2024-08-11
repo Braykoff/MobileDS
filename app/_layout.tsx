@@ -1,4 +1,5 @@
 import { createNativeStackNavigator, NativeStackNavigationOptions } from "@react-navigation/native-stack";
+import 'react-native-polyfill-globals/auto'; // Will polyfill all (for MessagePack)
 import * as SplashScreen from "expo-splash-screen";
 import * as SystemUI from 'expo-system-ui';
 import ControllerLayout from "./controller/_layout";
@@ -22,7 +23,7 @@ const Stack = createNativeStackNavigator<MainStackParamList>();
  */
 export default function MainLayout() {
   // Set default background
-  SystemUI.setBackgroundColorAsync( Colors.glass.background );
+  SystemUI.setBackgroundColorAsync(Colors.glass.background);
 
   // Load fonts
   const [loaded, error] = useFonts({

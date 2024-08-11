@@ -5,10 +5,11 @@ import * as SystemUI from "expo-system-ui";
 import { scale, verticalScale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
 import { GithubLink } from "@/constants/Constants";
-import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/components/frc/IPHandler";
+import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/util/IPHandler";
 import { MainStackParamList } from "./_layout";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RobotState } from "@/util/StateManager";
+import { NTConnection, setCurrentNTConnection } from "@/util/nt/NTComms";
 
 type HomeScreenNavigationProps = NativeStackNavigationProp<MainStackParamList, "index">;
 type Props = { navigation: HomeScreenNavigationProps }
@@ -28,6 +29,9 @@ function beginConnection(input: string, navigation: HomeScreenNavigationProps) {
       "Please enter a valid team number (0 - 25599), ip address (such as 10.71.53.2), or hostname (such as roboRIO-0000-frc.local)");
     return;
   }
+
+  // Connect to robot
+  setCurrentNTConnection(new NTConnection(input));
 
   // Go to controller tabs
   RobotState.Address = input;
