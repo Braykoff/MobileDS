@@ -3,6 +3,15 @@ export enum NTEditType {
   AlphaNumeric, Numeric, Boolean, Uneditable
 }
 
+/** Removes the leading slash in a name, if it exists. */
+function removeLeadingSlash(input: string): string {
+  if (input.charAt(0) == "/") return input.substring(1);
+  else return input;
+}
+
+/** Either an NTTopic or an NTTable. */
+export type NTItem = (NTTable | NTTopic);
+
 /** A NetworkTables topic of abstract type. */
 export abstract class NTTopic {
   /** The pretty name of this topic */
@@ -22,10 +31,10 @@ export abstract class NTTopic {
   public abstract editable: NTEditType;
   
   public constructor(fullName: string, type: string, id: number, root: NTTable) {
-    if (fullName.charAt(0) === "/") { fullName = fullName.substring(1); } // Remove leading '/'
+    fullName = removeLeadingSlash(fullName);
     var splitName = fullName.split("/")
 
-    this.name = splitName.at(-1) ?? "FAILED_TO_PARSE_NAME";
+    this.name = splitName.at(-1) ?? "";
     this.fullName = fullName;
     this.type = type;
     this.id = id;
@@ -33,14 +42,21 @@ export abstract class NTTopic {
     // Find parent
     splitName.pop();
     var parent = root;
+    var fullTableName = ""; // In case new NTTable needs to be created
 
     for (let ancestor of splitName) {
       // Create a new NTTable, if needed
-      if (!(ancestor in parent.subtables)) { new NTTable(parent, ancestor); }
+      fullTableName += `/${ancestor}`;
+      if (!(ancestor in parent.subtables)) { new NTTable(parent, fullTableName); }
       parent = parent.subtables[ancestor];
     }
 
     this.parent = parent;
+
+    if (this.name in parent.topics) {
+      console.log("Creating new NTTopic for an already-created topic");
+    }
+
     parent.topics[this.name] = this;
   }
 
@@ -56,8 +72,11 @@ export abstract class NTTopic {
 
 /** A NetworkTable containing subtables and topics. */
 export class NTTable {
-  /** Name of this table */
+  /** Pretty name of this table */
   public name: string;
+
+  /** The full name of this table */
+  public fullName: string;
   
   /** List of subtables */
   public subtables: { [name: string]: NTTable } = {};
@@ -68,24 +87,47 @@ export class NTTable {
   /** Parent of this table */
   public parent: NTTable | null;
   
-  /** Whether the table is currently being shown */
-  public shown: boolean = false;
+  /** Whether the table is currently expanded/collapsed (when rendered in networktable) */
+  public expanded: boolean = false;
   
   /** The depth of the topic (ie, number of parents) */
   public depth: number;
   
-  public constructor(parent: NTTable | null, name: string) {
+  public constructor(parent: NTTable | null, fullName: string) {
     this.parent = parent
-    this.name = name;
+
+    fullName = removeLeadingSlash(fullName);
+    this.fullName = fullName;
+    this.name = fullName.split("/").at(-1) ?? "";
     
     // Add to parent
     if (this.parent != null) {
-      this.parent.subtables[name] = this;
+      this.parent.subtables[this.name] = this;
       this.depth = this.parent.depth + 1;
     } else {
       // This is the root table
       this.depth = 0;
-      this.shown = true;
+      this.expanded = true;
     }
+  }
+
+  /** Prints this out in the console.log, with all its descendants. */
+  public print() {
+    var depth = " ".repeat(this.depth);
+    var depthPlusOne = " ".repeat(this.depth + 1);
+
+    console.log(`${depth}Table '${this.name}': {`);
+
+    // Print topics
+    for (var topic in this.topics) {
+      console.log(`${depthPlusOne}Topic '${topic}': '${this.topics[topic].getValue()}' (type '${this.topics[topic].type}')`);
+    }
+
+    // Print tables
+    for (var table in this.subtables) {
+      this.subtables[table].print();
+    }
+
+    console.log(`${depth}}`);
   }
 }

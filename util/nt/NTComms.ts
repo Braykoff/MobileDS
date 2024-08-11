@@ -4,6 +4,11 @@ import { decodeMulti } from "@msgpack/msgpack";
 import { createTypedNTTopic } from "./NTTypes";
 import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
 
+export const NTConnectionEvents = {
+  ConnectionStatusChanged: "connectionStatusChange",
+  TableUpdated: "tableUpdated"
+}
+
 export class NTConnection {
   private socket: WebSocket;
   public readonly address: string;
@@ -15,7 +20,6 @@ export class NTConnection {
   /** The root NetworkTable */
   public rootNetworkTable = new NTTable(null, "NetworkTables");
   private ntTopics: { [ topicId: number ]: NTTopic } = {}; // Maps subscribe ids to NTTopics
-  public ntChanges = 0; // increases on every NT change, UI is hooked to this value's changes
 
   public readonly events = new EventEmitter();
   
@@ -52,12 +56,12 @@ export class NTConnection {
         }
       }]));
 
-     this.events.emit("connectionStatusChanged");
+     this.events.emit(NTConnectionEvents.ConnectionStatusChanged);
     };
     
     // When the socket closes
     this.socket.onclose = () => {
-      this.events.emit("connectionStatusChanged");
+      this.events.emit(NTConnectionEvents.ConnectionStatusChanged);
 
       // Clean up cache
       this.rootNetworkTable = new NTTable(null, "NetworkTables");
@@ -73,6 +77,8 @@ export class NTConnection {
         clearInterval(this.reconnectIntervalID);
         this.reconnectIntervalID = null;
       }
+
+      this.events.emit(NTConnectionEvents.TableUpdated);
       
       // Handle reconnect
       if (!this.closingSocket) {
@@ -105,7 +111,7 @@ export class NTConnection {
           }
         }
 
-        this.ntChanges += 1;
+        this.events.emit(NTConnectionEvents.TableUpdated);
       } else if (typeof data === "string") {
         // JSON message
         data = JSON.parse(data);
@@ -139,7 +145,7 @@ export class NTConnection {
           } // properties messages are ignored
         }
 
-        this.ntChanges += 1;
+        this.events.emit(NTConnectionEvents.TableUpdated);
       } else {
         // Unknown message
         console.log(`Received unknown message of type: ${typeof data}`);
