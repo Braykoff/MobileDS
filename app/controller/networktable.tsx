@@ -8,6 +8,7 @@ import { NTTableItem } from "@/components/NTTableItem";
 import { NTItem, NTTable, NTTopic } from "@/util/nt/NTData";
 import { useState } from "react";
 import { scale } from "react-native-size-matters";
+import { Colors } from "@/constants/Colors";
 
 // Init navigation
 type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "NetworkTables">;
@@ -62,7 +63,7 @@ export default function NetworkTableScreen({ navigation } : Props) {
   });
   
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <FlatList
         style={styles.table}
         data={renderedNTTable}
@@ -75,8 +76,11 @@ export default function NetworkTableScreen({ navigation } : Props) {
 
 // Styles
 const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
   table: {
-    margin: scale(3),
-    backgroundColor: "blue"
+    flex: 1,
+    margin: scale(3)
   }
 });

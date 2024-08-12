@@ -16,5 +16,8 @@ export const Colors = {
     defaultItemColor: "#363636",
     connectedLabel: "green",
     notConnectedLabel: "red"
+  },
+  networkTable: {
+    tableBackground: "#222222"
   }
 };

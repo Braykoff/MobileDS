@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, Alert, TextInput, Pressable } from "react-native";
 import { openURL } from "expo-linking";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as SystemUI from "expo-system-ui";
 import { scale, verticalScale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
@@ -9,6 +9,8 @@ import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/util/IP
 import { MainStackParamList } from "./_layout";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { NTConnection, setCurrentNTConnection } from "@/util/nt/NTComms";
+import { RFPercentage } from "react-native-responsive-fontsize";
+import { getStoredData, setStoredData, StorageKeys } from "@/util/StorageManager";
 
 type HomeScreenNavigationProps = NativeStackNavigationProp<MainStackParamList, "index">;
 type Props = { navigation: HomeScreenNavigationProps }
@@ -18,6 +20,9 @@ type Props = { navigation: HomeScreenNavigationProps }
  * @param input The "team number" input value.
  */
 function beginConnection(input: string, navigation: HomeScreenNavigationProps) {
+  // Save this input
+  setStoredData(StorageKeys.lastAddress, input);
+
   if (isValidTeamNumber(input)) {
     // User entered a team number
     input = teamNumberToIPAddress(input);
@@ -50,6 +55,16 @@ export default function IndexScreen({ navigation } : Props) {
   const [connectBttnHover, setConnectBttnHover] = useState(false);
   const [githubBttnHover, setGithubBttnHover] = useState(false);
 
+  // Try to load previous input from storage
+  useEffect(() => {
+    const loadLastInput = async () => {
+      const val = await getStoredData(StorageKeys.lastAddress, "");
+      setTeamNumberInput(val);
+    }
+
+    loadLastInput();
+  }, []);
+
   return (
     // Full screen container
     <View style={styles.outerContainer}>
@@ -66,6 +81,7 @@ export default function IndexScreen({ navigation } : Props) {
           autoCorrect={false}
           autoCapitalize="none"
           spellCheck={false}
+          value={ teamNumberInput }
           onChangeText={ (text) => setTeamNumberInput(text) }
         />
         { /* Connect button */}
@@ -117,7 +133,7 @@ const styles = StyleSheet.create({
     flex: 6,
     textAlign: "center",
     verticalAlign: "middle",
-    fontSize: scale(40)
+    fontSize: RFPercentage(6)
   },
   // IP Address input entry
   ipInput: {
@@ -129,7 +145,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.app.accentColor,
     borderRadius: scale(5),
     paddingHorizontal: scale(2),
-    fontSize: scale(13),
+    fontSize: RFPercentage(1.75),
     flex: 3
   },
   // 'Connect' and 'Github' buttons
@@ -143,6 +159,6 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Regular",
     textAlign: "center",
     color: Colors.app.lightTextColor,
-    fontSize: scale(15)
+    fontSize: RFPercentage(2)
   }
 });
