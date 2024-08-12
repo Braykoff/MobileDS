@@ -1,4 +1,4 @@
-import { FlatList, Pressable, SafeAreaView, Text } from "react-native";
+import { FlatList, Pressable, SafeAreaView, StyleSheet, Text } from "react-native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { ControllerDrawerParamList } from "./_layout";
 import { getCurrentNTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
@@ -7,6 +7,7 @@ import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 import { NTTableItem } from "@/components/NTTableItem";
 import { NTItem, NTTable, NTTopic } from "@/util/nt/NTData";
 import { useState } from "react";
+import { scale } from "react-native-size-matters";
 
 // Init navigation
 type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "NetworkTables">;
@@ -52,17 +53,18 @@ export default function NetworkTableScreen({ navigation } : Props) {
   });
   
   // Create rendered NT table
-  const [renderedNTTable, setRenderedNTTable] = useState([] as NTItem[]);
-  setRenderedNTTable(buildRenderedList(ntConnection.rootNetworkTable));
+  const [renderedNTTable, setRenderedNTTable] = useState(buildRenderedList(ntConnection.rootNetworkTable));
   
   // Listen for table change
-  ntConnection.events.addListener(NTConnectionEvents.TableUpdated, () => {
+  ntConnection.events.addListener(NTConnectionEvents.TableUpdated, (sender) => {
     setRenderedNTTable(buildRenderedList(ntConnection.rootNetworkTable));
+    console.log(`Request rerender by ${sender}`);
   });
   
   return (
     <SafeAreaView>
       <FlatList
+        style={styles.table}
         data={renderedNTTable}
         renderItem={({item}) => <NTTableItem contents={item} />}
         keyExtractor={(item: NTItem) => item.fullName}
@@ -70,3 +72,11 @@ export default function NetworkTableScreen({ navigation } : Props) {
     </SafeAreaView>
   );
 }
+
+// Styles
+const styles = StyleSheet.create({
+  table: {
+    margin: scale(3),
+    backgroundColor: "blue"
+  }
+});

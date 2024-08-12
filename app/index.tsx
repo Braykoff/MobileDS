@@ -41,7 +41,7 @@ function beginConnection(input: string, navigation: HomeScreenNavigationProps) {
  */
 export default function IndexScreen({ navigation } : Props) {
   // Set background color (async)
-  SystemUI.setBackgroundColorAsync(Colors.glass.background);
+  SystemUI.setBackgroundColorAsync(Colors.app.background);
 
   // Team number entry state
   const [teamNumberInput, setTeamNumberInput] = useState("");
@@ -70,7 +70,7 @@ export default function IndexScreen({ navigation } : Props) {
         />
         { /* Connect button */}
         <Pressable 
-          style={[styles.buttonContainer, { backgroundColor: !connectBttnHover ? Colors.glass.accentColor : Colors.glass.accentColorDark }]}
+          style={[styles.buttonContainer, { backgroundColor: !connectBttnHover ? Colors.app.accentColor : Colors.app.accentColorDark }]}
           onPressIn={ () => setConnectBttnHover(true) }
           onPressOut={ () => setConnectBttnHover(false) }
           onPress={ () => beginConnection(teamNumberInput, navigation) }
@@ -79,7 +79,7 @@ export default function IndexScreen({ navigation } : Props) {
         </Pressable>
         { /* GitHub button */}
         <Pressable 
-          style={[styles.buttonContainer, { backgroundColor: !githubBttnHover ? Colors.glass.accentColor : Colors.glass.accentColorDark }]}
+          style={[styles.buttonContainer, { backgroundColor: !githubBttnHover ? Colors.app.accentColor : Colors.app.accentColorDark }]}
           onPressIn={ () => setGithubBttnHover(true) }
           onPressOut={ () => setGithubBttnHover(false) }
           onPress={ () => openURL(GithubLink) }
@@ -91,6 +91,7 @@ export default function IndexScreen({ navigation } : Props) {
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   // Full screen container
   outerContainer: {
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
   // Header
   header: {
     fontFamily: "Montserrat-Bold",
-    color: Colors.glass.textColor,
+    color: Colors.app.lightTextColor,
     flex: 6,
     textAlign: "center",
     verticalAlign: "middle",
@@ -121,11 +122,11 @@ const styles = StyleSheet.create({
   // IP Address input entry
   ipInput: {
     fontFamily: "Montserrat-Regular",
-    backgroundColor: Colors.glass.inputBackground,
-    color: Colors.glass.inputTextColor,
+    backgroundColor: Colors.index.inputBackground,
+    color: Colors.index.inputTextColor,
     margin: scale(6),
     borderWidth: 1.5,
-    borderColor: Colors.glass.accentColor,
+    borderColor: Colors.app.accentColor,
     borderRadius: scale(5),
     paddingHorizontal: scale(2),
     fontSize: scale(13),
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
   button: {
     fontFamily: "Montserrat-Regular",
     textAlign: "center",
-    color: Colors.glass.textColor,
+    color: Colors.app.lightTextColor,
     fontSize: scale(15)
   }
 });

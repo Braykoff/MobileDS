@@ -23,7 +23,7 @@ const Stack = createNativeStackNavigator<MainStackParamList>();
  */
 export default function MainLayout() {
   // Set default background
-  SystemUI.setBackgroundColorAsync(Colors.glass.background);
+  SystemUI.setBackgroundColorAsync(Colors.app.background);
 
   // Load fonts
   const [loaded, error] = useFonts({
@@ -51,6 +51,6 @@ export default function MainLayout() {
 // Stack options
 const ScreenOptions: NativeStackNavigationOptions = {
   contentStyle: {
-    backgroundColor: Colors.glass.background
+    backgroundColor: Colors.app.background
   }
 }

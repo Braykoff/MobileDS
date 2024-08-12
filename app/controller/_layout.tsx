@@ -39,7 +39,7 @@ export default function ControllerLayout() {
         component={ NetworkTableScreen } 
         options={{
           drawerIcon: ({focused, size}) => (
-            <Ionicons name="globe" size={size} color={ focused ? Colors.glass.accentColorDark : Colors.generic.darkGray } />
+            <Ionicons name="globe" size={size} color={ focused ? Colors.app.accentColorDark : Colors.controllerDrawer.defaultItemColor } />
           )}} />
       {/* Cameras Screen */}
       <Drawer.Screen 
@@ -47,7 +47,7 @@ export default function ControllerLayout() {
         component={ CamerasScreen } 
         options={{
           drawerIcon: ({focused, size}) => (
-            <Ionicons name="camera" size={size} color={ focused ? Colors.glass.accentColorDark : Colors.generic.darkGray } />
+            <Ionicons name="camera" size={size} color={ focused ? Colors.app.accentColorDark : Colors.controllerDrawer.defaultItemColor } />
           )}} />
     </Drawer.Navigator>
   );

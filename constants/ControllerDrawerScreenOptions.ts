@@ -8,25 +8,25 @@ import { ConnectedSymbol, NotConnectedSymbol } from "./Constants"
 const defaultScreenOptions: DrawerNavigationOptions = {
   // Content style
   sceneContainerStyle: {
-    backgroundColor: Colors.glass.background
+    backgroundColor: Colors.app.background
   },
   // Drawer style
   drawerContentStyle: {
-    backgroundColor: Colors.glass.textColor
+    backgroundColor: Colors.app.lightTextColor
   },
-  drawerInactiveTintColor: Colors.generic.darkGray,
-  drawerActiveTintColor: Colors.glass.accentColorDark,
+  drawerInactiveTintColor: Colors.controllerDrawer.defaultItemColor,
+  drawerActiveTintColor: Colors.app.accentColorDark,
   // Header style
   headerStyle: {
     height: scale(40),
-    borderBottomColor: Colors.glass.accentColor,
+    borderBottomColor: Colors.app.accentColor,
     borderBottomWidth: scale(2)
   },
   headerTitleStyle: {
     fontFamily: "Montserrat-Bold",
     color: "red"
   },
-  headerTintColor: Colors.glass.accentColor,
+  headerTintColor: Colors.app.accentColor,
 }
 
 /** Creates DrawerNavigationOptions using the current NTConnection */
@@ -37,7 +37,7 @@ export function createDrawerOptions(ntConnection: NTConnection): DrawerNavigatio
     ...defaultScreenOptions,
     headerTitleStyle: {
       fontFamily: "Montserrat-Bold",
-      color: connected ? "green" : "red"
+      color: connected ? Colors.controllerDrawer.connectedLabel : Colors.controllerDrawer.notConnectedLabel
     },
     headerTitle: `${ connected ? ConnectedSymbol : NotConnectedSymbol } ${ ntConnection.address }`
   }

@@ -4,6 +4,8 @@ import { decodeMulti } from "@msgpack/msgpack";
 import { createTypedNTTopic } from "./NTTypes";
 import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
 
+/** The first argument of every event will be a string describe who emitted the event, for 
+ * debugging. */
 export const NTConnectionEvents = {
   ConnectionStatusChanged: "connectionStatusChange",
   TableUpdated: "tableUpdated"
@@ -56,12 +58,12 @@ export class NTConnection {
         }
       }]));
 
-     this.events.emit(NTConnectionEvents.ConnectionStatusChanged);
+     this.events.emit(NTConnectionEvents.ConnectionStatusChanged, "socket.onopen");
     };
     
     // When the socket closes
     this.socket.onclose = () => {
-      this.events.emit(NTConnectionEvents.ConnectionStatusChanged);
+      this.events.emit(NTConnectionEvents.ConnectionStatusChanged, "socket.onclose");
 
       // Clean up cache
       this.rootNetworkTable = new NTTable(null, "NetworkTables");
@@ -78,7 +80,7 @@ export class NTConnection {
         this.reconnectIntervalID = null;
       }
 
-      this.events.emit(NTConnectionEvents.TableUpdated);
+      this.events.emit(NTConnectionEvents.TableUpdated, "socket.onclose");
       
       // Handle reconnect
       if (!this.closingSocket) {
@@ -111,7 +113,7 @@ export class NTConnection {
           }
         }
 
-        this.events.emit(NTConnectionEvents.TableUpdated);
+        //this.events.emit(NTConnectionEvents.TableUpdated, "socket.onmessage:object");
       } else if (typeof data === "string") {
         // JSON message
         data = JSON.parse(data);
@@ -145,7 +147,7 @@ export class NTConnection {
           } // properties messages are ignored
         }
 
-        this.events.emit(NTConnectionEvents.TableUpdated);
+        this.events.emit(NTConnectionEvents.TableUpdated, "socket.onmessage:string");
       } else {
         // Unknown message
         console.log(`Received unknown message of type: ${typeof data}`);
