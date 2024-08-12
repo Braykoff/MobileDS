@@ -59,7 +59,7 @@ export default function NetworkTableScreen({ navigation } : Props) {
   // Listen for table change
   ntConnection.events.addListener(NTConnectionEvents.TableUpdated, (sender) => {
     setRenderedNTTable(buildRenderedList(ntConnection.rootNetworkTable));
-    console.log(`Request rerender by ${sender}`);
+    //console.log(`Request rerender by ${sender}`);
   });
   
   return (
@@ -67,7 +67,7 @@ export default function NetworkTableScreen({ navigation } : Props) {
       <FlatList
         style={styles.table}
         data={renderedNTTable}
-        renderItem={({item}) => <NTTableItem contents={item} />}
+        renderItem={({item}) => <NTTableItem contents={item} connection={ntConnection} />}
         keyExtractor={(item: NTItem) => item.fullName}
       />
     </SafeAreaView>

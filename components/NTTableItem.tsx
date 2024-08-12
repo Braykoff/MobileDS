@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { NTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
 import { NTItem, NTTable } from "@/util/nt/NTData"
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
@@ -6,14 +7,16 @@ import { RFPercentage } from "react-native-responsive-fontsize";
 import { scale } from "react-native-size-matters";
 
 type NTTableItemProps = {
-  contents: NTItem
+  contents: NTItem,
+  connection: NTConnection
 }
 
-export function NTTableItem({ contents }: NTTableItemProps) {
+/** A single item in the NetworkTable table. */
+export function NTTableItem({ contents, connection }: NTTableItemProps) {
   const [isHovering, setHovering] = useState(false);
 
   if (contents instanceof NTTable) {
-    // This is a NTTable
+    // This is an NTTable
     const [getImageSize, setImageSize] = useState(0.0);
 
     return (
@@ -24,7 +27,13 @@ export function NTTableItem({ contents }: NTTableItemProps) {
         }]}
         onPressIn={ () => setHovering(true) }
         onPressOut={ () => setHovering(false) }
+        onPress={ () => {
+          contents.expanded = !contents.expanded;
+          // Hijack the TableUpdated event to trigger a rerender of the table:
+          connection.events.emit(NTConnectionEvents.TableUpdated, `NTTableItem.onPress:${contents.fullName}`);
+        }}
       >
+        { /* Dropdown arrow */}
         <Image 
           style={[styles.ntDropdownArrow, {
             height: getImageSize,
@@ -32,6 +41,7 @@ export function NTTableItem({ contents }: NTTableItemProps) {
             transform: [{ rotate: `${ contents.expanded ? 90 : 0 }deg` }]
           }]}
           source={require("../assets/images/dropdown-arrow.png")} />
+        { /* NTTable name */}
         <View style={{flex: 1}}>
           <Text 
             style={[styles.label, styles.ntTableLabel]} 
@@ -43,7 +53,7 @@ export function NTTableItem({ contents }: NTTableItemProps) {
       </Pressable>
     );
   } else {
-    // This is a NTTopic
+    // This is an NTTopic
     return (
       <View style={styles.item}>
         <Text style={styles.label}>NTTopic: {contents.name}</Text>
