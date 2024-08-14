@@ -26,17 +26,24 @@ export abstract class NTTopic {
   public lastUpdate: number = -1;
   /** The type, as a string */
   public type: string;
+  /** The type, as a number */
+  public typeInt: number;
+  /** Whether this topic is expanded in the UI */
+  public expanded = false;
+  /** Whether this topic can be published to yet */
+  public hasPublishId = false;
 
   /** How this topic can be edited */
   public abstract editable: NTEditType;
   
-  public constructor(fullName: string, type: string, id: number, root: NTTable) {
+  public constructor(fullName: string, type: string, typeInt: number, id: number, root: NTTable) {
     fullName = removeLeadingSlash(fullName);
     var splitName = fullName.split("/")
 
     this.name = splitName.at(-1) ?? "";
     this.fullName = fullName;
     this.type = type;
+    this.typeInt = typeInt;
     this.id = id;
 
     // Find parent
@@ -63,11 +70,11 @@ export abstract class NTTopic {
   /** Gets the value as a string. */
   public abstract getValue(): string;
 
-  /** Sets a new value (Must also accept strings if editable). */
+  /** Sets a new value that is already its type. */
   public abstract setValue(newValue: any): void;
 
-  /** Returns whether the type int (from a MessagePack) matches the type of the Topic. */
-  public abstract verifyType(type: number): boolean;
+  /** Convert a string into the proper type for this topic (only if editable). */
+  public abstract convertValue(value: string): any;
 }
 
 /** A NetworkTable containing subtables and topics. */
@@ -88,7 +95,7 @@ export class NTTable {
   public parent: NTTable | null;
   
   /** Whether the table is currently expanded/collapsed (when rendered in networktable) */
-  public expanded: boolean = false;
+  public expanded = false;
   
   /** The depth of the topic (ie, number of parents) */
   public depth: number;

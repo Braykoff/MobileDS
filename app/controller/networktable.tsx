@@ -57,9 +57,8 @@ export default function NetworkTableScreen({ navigation } : Props) {
   const [renderedNTTable, setRenderedNTTable] = useState(buildRenderedList(ntConnection.rootNetworkTable));
   
   // Listen for table change
-  ntConnection.events.addListener(NTConnectionEvents.TableUpdated, (sender) => {
+  ntConnection.events.addListener(NTConnectionEvents.TableUpdated, () => {
     setRenderedNTTable(buildRenderedList(ntConnection.rootNetworkTable));
-    //console.log(`Request rerender by ${sender}`);
   });
   
   return (

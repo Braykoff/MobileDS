@@ -18,6 +18,7 @@ export const Colors = {
     notConnectedLabel: "red"
   },
   networkTable: {
-    tableBackground: "#222222"
+    ntTopicItemBackground: "#222222",
+    ntTopicItemBackgroundHover: "#111111"
   }
 };
