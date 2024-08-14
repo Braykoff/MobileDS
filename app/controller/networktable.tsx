@@ -50,15 +50,16 @@ export default function NetworkTableScreen({ navigation } : Props) {
   }
   
   // Listen for status change
-  ntConnection.events.addListener(NTConnectionEvents.ConnectionStatusChanged, () => {
+  ntConnection.events.addSingleListener(NTConnectionEvents.ConnectionStatusChanged, () => {
     navigation.setOptions(createDrawerOptions(ntConnection));
+    console.log(`Redrawing topbar (${ntConnection.events.listenerCount(NTConnectionEvents.ConnectionStatusChanged)})`);
   });
   
   // Create rendered NT table
   const [renderedNTTable, setRenderedNTTable] = useState(buildRenderedList(ntConnection.rootNetworkTable));
   
   // Listen for table change
-  ntConnection.events.addListener(NTConnectionEvents.TableUpdated, () => {
+  ntConnection.events.addSingleListener(NTConnectionEvents.TableUpdated, () => {
     setRenderedNTTable(buildRenderedList(ntConnection.rootNetworkTable));
   });
   

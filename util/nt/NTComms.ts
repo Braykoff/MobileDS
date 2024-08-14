@@ -2,7 +2,7 @@ import { NTName } from "@/constants/Constants";
 import { NTTable, NTTopic } from "./NTData";
 import { decodeMulti, encode } from "@msgpack/msgpack";
 import { createTypedNTTopic } from "./NTTypes";
-import EventEmitter from "react-native/Libraries/vendor/emitter/EventEmitter";
+import { SingleEventEmitter } from "../SingleEventEmitter";
 
 /** The first argument of every event will be a string describe who emitted the event, for 
  * debugging. */
@@ -16,6 +16,8 @@ export const NTConnectionEvents = {
 function microseconds(offset: number): number {
   return (Date.now() * 1000) + offset;
 }
+
+var a = 0;
 
 export class NTConnection {
   private socket: WebSocket;
@@ -31,7 +33,7 @@ export class NTConnection {
 
   private timeOffset = 0; // Time offset, in microseconds
 
-  public readonly events = new EventEmitter();
+  public readonly events = new SingleEventEmitter();
   
   public constructor(address: string) {
     // Set addresses
@@ -81,8 +83,8 @@ export class NTConnection {
       this.rootNetworkTable = new NTTable(null, "NetworkTables");
       this.ntTopics = {};
       this.timeOffset = 0.0;
-      
-      // Stop intervals
+
+      // Clean up listeners
       if (this.pingIntervalId != null) {
         clearInterval(this.pingIntervalId);
         this.pingIntervalId = null;
@@ -94,6 +96,9 @@ export class NTConnection {
       }
 
       this.events.emit(NTConnectionEvents.TableUpdated, "socket.onclose");
+
+      console.log(`SOCKET CLOSE CALLED ${a}`);
+      a+= 1;
       
       // Handle reconnect
       if (!this.closingSocket) {

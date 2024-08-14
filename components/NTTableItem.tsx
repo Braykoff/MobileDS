@@ -54,7 +54,7 @@ export function NTTableItem({ contents, connection }: NTTableItemProps) {
     const [updatePressed, setUpdatePressed] = useState(false); // Only used if expanded
 
     // Listen for a future change
-    connection.events.addListener(NTConnectionEvents.TopicUpdated + contents.fullName, () => {
+    connection.events.addSingleListener(NTConnectionEvents.TopicUpdated + contents.fullName, () => {
       setLastUpdate(contents.lastUpdate);
     });
 
