@@ -9,6 +9,7 @@ import { NTItem, NTTable, NTTopic } from "@/util/nt/NTData";
 import { useState } from "react";
 import { scale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
+import { NTTableEmptyItem } from "@/components/NTTableEmptyItem";
 
 // Init navigation
 type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "NetworkTables">;
@@ -67,6 +68,7 @@ export default function NetworkTableScreen({ navigation } : Props) {
         style={styles.table}
         data={renderedNTTable}
         renderItem={({item}) => <NTTableItem contents={item} connection={ntConnection} />}
+        ListEmptyComponent={ <NTTableEmptyItem /> }
         keyExtractor={(item: NTItem) => item.fullName}
       />
     </SafeAreaView>
