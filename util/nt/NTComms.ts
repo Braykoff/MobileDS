@@ -147,6 +147,14 @@ export class NTConnection {
             if (msg["params"]["pubuid"] != undefined) {
               // This is a response to a publish request
               //this.ntTopics[msg["params"]["pubuid"]].hasPublishId = true;
+
+              if (msg["params"]["id"] != msg["params"]["pubuid"]) {
+                // For some reason, the NT server will give us a new subscribe ID for this topic too
+                // TODO probably should figure this one out
+                this.ntTopics[msg["params"]["id"]] = this.ntTopics[msg["params"]["pubuid"]]
+                console.log(`New sub id for topic ${msg["params"]["id"]} (previously ${msg["params"]["pubuid"]})`);
+              }
+
               continue;
             }
 
