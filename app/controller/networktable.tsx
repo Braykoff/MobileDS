@@ -1,19 +1,13 @@
-import { FlatList, Pressable, SafeAreaView, StyleSheet, Text } from "react-native";
-import { DrawerNavigationProp } from "@react-navigation/drawer";
-import { ControllerDrawerParamList } from "./_layout";
+import { FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { getCurrentNTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
 import { ExceptionText } from "@/components/ExceptionText";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 import { NTTableItem } from "@/components/NTTableItem";
-import { NTItem, NTTable, NTTopic } from "@/util/nt/NTData";
+import { NTItem, NTTable } from "@/util/nt/NTData";
 import { useState } from "react";
 import { scale } from "react-native-size-matters";
-import { Colors } from "@/constants/Colors";
 import { NTTableEmptyItem } from "@/components/NTTableEmptyItem";
-
-// Init navigation
-type NetworkTableScreenNavigationProp = DrawerNavigationProp<ControllerDrawerParamList, "NetworkTables">;
-type Props = { navigation: NetworkTableScreenNavigationProp }
+import { useNavigation } from "expo-router";
 
 /** Ran recursively to populate a list with NTItems to render. */
 function buildRenderedListRecursive(table: NTTable, rendered: NTItem[]) {
@@ -40,7 +34,9 @@ function buildRenderedList(table: NTTable): NTItem[] {
 /**
 * The screen for all viewing the NetworkTables data.
 */
-export default function NetworkTableScreen({ navigation } : Props) {
+export default function NetworkTableScreen() {
+  const navigation = useNavigation();
+  
   // Get NTConnection
   const ntConnection = getCurrentNTConnection();
   
@@ -52,7 +48,6 @@ export default function NetworkTableScreen({ navigation } : Props) {
   // Listen for status change
   ntConnection.events.addSingleListener(NTConnectionEvents.ConnectionStatusChanged, () => {
     navigation.setOptions(createDrawerOptions(ntConnection));
-    console.log(`Redrawing topbar (${ntConnection.events.listenerCount(NTConnectionEvents.ConnectionStatusChanged)})`);
   });
   
   // Create rendered NT table

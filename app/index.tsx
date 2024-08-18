@@ -6,20 +6,16 @@ import { scale, verticalScale } from "react-native-size-matters";
 import { Colors } from "@/constants/Colors";
 import { GithubLink } from "@/constants/Constants";
 import { isValidTeamNumber, teamNumberToIPAddress, isValidHost } from "@/util/IPHandler";
-import { MainStackParamList } from "./_layout";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { NTConnection, setCurrentNTConnection } from "@/util/nt/NTComms";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { getStoredData, setStoredData, StorageKeys } from "@/util/StorageManager";
-
-type HomeScreenNavigationProps = NativeStackNavigationProp<MainStackParamList, "index">;
-type Props = { navigation: HomeScreenNavigationProps }
+import { Router, useRouter } from "expo-router";
 
 /**
  * Called once "Connect" button is pressed.
  * @param input The "team number" input value.
  */
-function beginConnection(input: string, navigation: HomeScreenNavigationProps) {
+function beginConnection(input: string, router: Router) {
   // Save this input
   setStoredData(StorageKeys.lastAddress, input);
 
@@ -38,15 +34,18 @@ function beginConnection(input: string, navigation: HomeScreenNavigationProps) {
   setCurrentNTConnection(new NTConnection(input));
 
   // Go to controller tabs
-  navigation.replace("controller");
+  router.replace("/controller");
 }
 
 /**
  * @returns The home (connection) page.
  */
-export default function IndexScreen({ navigation } : Props) {
+export default function IndexScreen() {
   // Set background color (async)
   SystemUI.setBackgroundColorAsync(Colors.app.background);
+
+  // Get expo router
+  const router = useRouter();
 
   // Team number entry state
   const [teamNumberInput, setTeamNumberInput] = useState("");
@@ -89,7 +88,7 @@ export default function IndexScreen({ navigation } : Props) {
           style={[styles.buttonContainer, { backgroundColor: !connectBttnHover ? Colors.app.accentColor : Colors.app.accentColorDark }]}
           onPressIn={ () => setConnectBttnHover(true) }
           onPressOut={ () => setConnectBttnHover(false) }
-          onPress={ () => beginConnection(teamNumberInput, navigation) }
+          onPress={ () => beginConnection(teamNumberInput, router) }
         >
           <Text style={styles.button}>Connect</Text>
         </Pressable>

@@ -4,7 +4,7 @@ import { decodeMulti, encode } from "@msgpack/msgpack";
 import { createTypedNTTopic } from "./NTTypes";
 import { SingleEventEmitter } from "../SingleEventEmitter";
 
-/** The first argument of every event will be a string describe who emitted the event, for 
+/** The first argument of every event will be a string describing who emitted the event, for 
  * debugging. */
 export const NTConnectionEvents = {
   ConnectionStatusChanged: "connectionStatusChange",
@@ -16,8 +16,6 @@ export const NTConnectionEvents = {
 function microseconds(offset: number): number {
   return (Date.now() * 1000) + offset;
 }
-
-var a = 0;
 
 export class NTConnection {
   private socket: WebSocket;
@@ -97,9 +95,6 @@ export class NTConnection {
 
       this.events.emit(NTConnectionEvents.TableUpdated, "socket.onclose");
 
-      console.log(`SOCKET CLOSE CALLED ${a}`);
-      a+= 1;
-      
       // Handle reconnect
       if (!this.closingSocket) {
         // Attempt to reconnect in 2.5 seconds
@@ -152,14 +147,6 @@ export class NTConnection {
             if (msg["params"]["pubuid"] != undefined) {
               // This is a response to a publish request
               //this.ntTopics[msg["params"]["pubuid"]].hasPublishId = true;
-
-              if (msg["params"]["id"] != msg["params"]["pubuid"]) {
-                // For some reason, the NT server will give us a new subscribe ID for this topic too
-                // TODO probably should figure this one out
-                this.ntTopics[msg["params"]["id"]] = this.ntTopics[msg["params"]["pubuid"]]
-                console.log(`New sub id for topic ${msg["params"]["id"]} (previously ${msg["params"]["pubuid"]})`);
-              }
-
               continue;
             }
 
@@ -178,6 +165,9 @@ export class NTConnection {
 
             if (id in this.ntTopics) {
               var topic = this.ntTopics[id];
+
+              console.log(`Topic ${id} unannounced (${topic.fullName})`);
+
               delete topic.parent.topics[topic.name];
               delete this.ntTopics[id];
             }
@@ -216,8 +206,6 @@ export class NTConnection {
         "properties": {}
     }}]));
 
-    // Ideally, we wait for an announce message before setting this to true, but for some unknown
-    // reason, the NT server doesn't always send one back for some topics.
     topic.hasPublishId = true;
   }
 
