@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, StyleSheet } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { getCurrentNTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
 import { ExceptionText } from "@/components/ExceptionText";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import { scale } from "react-native-size-matters";
 import { NTTableEmptyItem } from "@/components/NTTableEmptyItem";
 import { useNavigation } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 /** Ran recursively to populate a list with NTItems to render. */
 function buildRenderedListRecursive(table: NTTable, rendered: NTItem[]) {
