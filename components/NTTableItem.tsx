@@ -27,7 +27,7 @@ export function NTTableItem({ contents, connection }: NTTableItemProps) {
         onPressOut={ () => setHovering(false) }
         onPress={ () => {
           contents.expanded = !contents.expanded;
-          // Hijack the TableUpdated event to trigger a rerender of the table:
+          // Emit the TableUpdated event to trigger a rerender of the table:
           connection.events.emit(NTConnectionEvents.TableUpdated, `NTTableItem.onPress:${contents.fullName}`);
         }}
       >
@@ -58,7 +58,6 @@ export function NTTableItem({ contents, connection }: NTTableItemProps) {
       setLastUpdate(contents.lastUpdate);
     });
 
-    // Not expanded
     return (
       <Pressable 
         style={[styles.item, {
