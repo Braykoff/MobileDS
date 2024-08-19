@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { CustomEmitterSubscription } from "@/util/CustomEventEmitter";
 import { NTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
 import { NTEditType, NTItem, NTTable, NTTopic } from "@/util/nt/NTData"
 import { useState } from "react";
@@ -10,6 +11,8 @@ type NTTableItemProps = {
   contents: NTItem,
   connection: NTConnection
 }
+
+var UpdateListeners: { [fullName: string]: CustomEmitterSubscription } = {}
 
 /** A single item in the NetworkTable table. */
 export function NTTableItem({ contents, connection }: NTTableItemProps) {
@@ -54,7 +57,11 @@ export function NTTableItem({ contents, connection }: NTTableItemProps) {
     const [updatePressed, setUpdatePressed] = useState(false); // Only used if expanded
 
     // Listen for a future change
-    connection.events.addSingleListener(NTConnectionEvents.TopicUpdated + contents.fullName, () => {
+    if (contents.fullName in UpdateListeners) {
+      UpdateListeners[contents.fullName].remove();
+    }
+
+    UpdateListeners[contents.fullName] = connection.events.addListener(NTConnectionEvents.TopicUpdated + contents.fullName, () => {
       setLastUpdate(contents.lastUpdate);
     });
 

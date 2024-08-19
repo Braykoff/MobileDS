@@ -7,8 +7,12 @@ import { NTItem, NTTable } from "@/util/nt/NTData";
 import { useState } from "react";
 import { scale } from "react-native-size-matters";
 import { NTTableEmptyItem } from "@/components/NTTableEmptyItem";
-import { useNavigation } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { OptionalCustomEmitterSubscription } from "@/util/CustomEventEmitter";
+
+var ConnectionStatusListener: OptionalCustomEmitterSubscription = null;
+var UpdateListener: OptionalCustomEmitterSubscription = null
 
 /** Ran recursively to populate a list with NTItems to render. */
 function buildRenderedListRecursive(table: NTTable, rendered: NTItem[]) {
@@ -47,7 +51,11 @@ export default function NetworkTableScreen() {
   }
   
   // Listen for status change
-  ntConnection.events.addSingleListener(NTConnectionEvents.ConnectionStatusChanged, () => {
+  if (ConnectionStatusListener != null) {
+    ConnectionStatusListener.remove();
+  }
+
+  ConnectionStatusListener = ntConnection.events.addListener(NTConnectionEvents.ConnectionStatusChanged, () => {
     navigation.setOptions(createDrawerOptions(ntConnection));
   });
   
@@ -55,7 +63,11 @@ export default function NetworkTableScreen() {
   const [renderedNTTable, setRenderedNTTable] = useState(buildRenderedList(ntConnection.rootNetworkTable));
   
   // Listen for table change
-  ntConnection.events.addSingleListener(NTConnectionEvents.TableUpdated, () => {
+  if (UpdateListener != null) {
+    UpdateListener.remove();
+  }
+
+  UpdateListener = ntConnection.events.addListener(NTConnectionEvents.TableUpdated, () => {
     setRenderedNTTable(buildRenderedList(ntConnection.rootNetworkTable));
   });
   

@@ -2,7 +2,8 @@ import { NTName } from "@/constants/Constants";
 import { NTTable, NTTopic } from "./NTData";
 import { decodeMulti, encode } from "@msgpack/msgpack";
 import { createTypedNTTopic } from "./NTTypes";
-import { SingleEventEmitter } from "../SingleEventEmitter";
+import { CustomEventEmitter } from "../CustomEventEmitter";
+import { EventEmitter } from "@react-navigation/native";
 
 /** The first argument of every event will be a string describing who emitted the event, for 
  * debugging. */
@@ -31,9 +32,12 @@ export class NTConnection {
 
   private timeOffset = 0; // Time offset, in microseconds
 
-  public readonly events = new SingleEventEmitter();
+  public readonly events: CustomEventEmitter;
   
   public constructor(address: string) {
+    // Create emitter:
+    this.events = new CustomEventEmitter(`NT (${address})`);
+
     // Set addresses
     this.address = address;
     //var secureAddress = `wss://${address}:5811/nt/${NTName}`;
