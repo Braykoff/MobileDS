@@ -3,11 +3,9 @@ import EventEmitter, { EmitterSubscription } from "react-native/Libraries/vendor
 /** Will print out subscription count every second. */
 const EventEmitterDebugMode = true;
 
-export interface CustomEmitterSubscription {
+interface CustomEmitterSubscription {
   remove(): void;
 }
-
-export type OptionalCustomEmitterSubscription = (CustomEmitterSubscription | null);
 
 export class CustomEventEmitter {
   private emitter = new EventEmitter();

@@ -1,11 +1,10 @@
 import { ExceptionText } from "@/components/ExceptionText";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
-import { OptionalCustomEmitterSubscription } from "@/util/CustomEventEmitter";
-import { getCurrentNTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
+import { getCurrentNTConnection } from "@/util/nt/NTComms";
+import { useNTConnected } from "@/util/nt/NTHooks";
 import { useNavigation } from "expo-router";
+import { useEffect } from "react";
 import { View, Text } from "react-native";
-
-var ConnectionStatusListener: OptionalCustomEmitterSubscription = null;
 
 /** The screen for viewing camera streams. */
 export default function CamerasScreen() {
@@ -20,13 +19,12 @@ export default function CamerasScreen() {
   }
   
   // Listen for status change
-  if (ConnectionStatusListener != null) {
-    ConnectionStatusListener.remove();
-  }
+  // Listen for status change
+  const isNTConnected = useNTConnected(ntConnection);
 
-  ConnectionStatusListener = ntConnection.events.addListener(NTConnectionEvents.ConnectionStatusChanged, () => {
-    navigation.setOptions(createDrawerOptions(ntConnection));
-  });
+  useEffect(() => {
+    navigation.setOptions(createDrawerOptions(isNTConnected, ntConnection.address));
+  }, [isNTConnected]);
   
   return (
     <View>

@@ -1,11 +1,10 @@
 import { ExceptionText } from "@/components/ExceptionText";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
-import { OptionalCustomEmitterSubscription } from "@/util/CustomEventEmitter";
-import { getCurrentNTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
+import { getCurrentNTConnection } from "@/util/nt/NTComms";
+import { useNTConnected } from "@/util/nt/NTHooks";
 import { useNavigation } from "expo-router";
+import { useEffect } from "react";
 import { View, Text } from "react-native";
-
-var ConnectionStatusListener: OptionalCustomEmitterSubscription = null;
 
 /** The screen for driving the robot. */
 export default function DriverStationScreen() {
@@ -20,13 +19,11 @@ export default function DriverStationScreen() {
   }
 
   // Listen for status change
-  if (ConnectionStatusListener != null) {
-    ConnectionStatusListener.remove();
-  }
+  const isNTConnected = useNTConnected(ntConnection);
 
-  ConnectionStatusListener = ntConnection.events.addListener(NTConnectionEvents.ConnectionStatusChanged, () => {
-    navigation.setOptions(createDrawerOptions(ntConnection));
-  });
+  useEffect(() => {
+    navigation.setOptions(createDrawerOptions(isNTConnected, ntConnection.address));
+  }, [isNTConnected]);
 
   return (
     <View>

@@ -4,15 +4,12 @@ import { ExceptionText } from "@/components/ExceptionText";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 import { NTTableItem } from "@/components/NTTableItem";
 import { NTItem, NTTable } from "@/util/nt/NTData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { scale } from "react-native-size-matters";
 import { NTTableEmptyItem } from "@/components/NTTableEmptyItem";
 import { useFocusEffect, useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { OptionalCustomEmitterSubscription } from "@/util/CustomEventEmitter";
-
-var ConnectionStatusListener: OptionalCustomEmitterSubscription = null;
-var UpdateListener: OptionalCustomEmitterSubscription = null
+import { useNTConnected, useNTTableUpdated } from "@/util/nt/NTHooks";
 
 /** Ran recursively to populate a list with NTItems to render. */
 function buildRenderedListRecursive(table: NTTable, rendered: NTItem[]) {
@@ -51,25 +48,21 @@ export default function NetworkTableScreen() {
   }
   
   // Listen for status change
-  if (ConnectionStatusListener != null) {
-    ConnectionStatusListener.remove();
-  }
+  const isNTConnected = useNTConnected(ntConnection);
 
-  ConnectionStatusListener = ntConnection.events.addListener(NTConnectionEvents.ConnectionStatusChanged, () => {
-    navigation.setOptions(createDrawerOptions(ntConnection));
-  });
+  useEffect(() => {
+    navigation.setOptions(createDrawerOptions(isNTConnected, ntConnection.address));
+  }, [isNTConnected]);
   
   // Create rendered NT table
   const [renderedNTTable, setRenderedNTTable] = useState(buildRenderedList(ntConnection.rootNetworkTable));
   
   // Listen for table change
-  if (UpdateListener != null) {
-    UpdateListener.remove();
-  }
+  const tableUpdateListener = useNTTableUpdated(ntConnection);
 
-  UpdateListener = ntConnection.events.addListener(NTConnectionEvents.TableUpdated, () => {
+  useEffect(() => {
     setRenderedNTTable(buildRenderedList(ntConnection.rootNetworkTable));
-  });
+  }, [tableUpdateListener]);
   
   return (
     <SafeAreaView style={styles.container}>

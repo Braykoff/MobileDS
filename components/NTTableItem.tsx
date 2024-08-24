@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
-import { CustomEmitterSubscription } from "@/util/CustomEventEmitter";
 import { NTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
 import { NTEditType, NTItem, NTTable, NTTopic } from "@/util/nt/NTData"
+import { useNTTopicUpdated } from "@/util/nt/NTHooks";
 import { useState } from "react";
 import { View, Text, StyleSheet, Pressable, Image, Alert } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
@@ -12,7 +12,23 @@ type NTTableItemProps = {
   connection: NTConnection
 }
 
-var UpdateListeners: { [fullName: string]: CustomEmitterSubscription } = {}
+function hideAndUnpublishAllChildTopics(connection: NTConnection, table: NTTable) {
+  // Hide and unpublish topics
+  for (const topic in table.topics) {
+    var t = table.topics[topic];
+
+    t.expanded = false;
+
+    if (t.hasPublishId) {
+      connection.unRequestPublisher(t);
+    }
+  }
+
+  // Do the same for our subtables
+  for (const subtable in table.subtables) {
+    hideAndUnpublishAllChildTopics(connection, table.subtables[subtable]);
+  }
+}
 
 /** A single item in the NetworkTable table. */
 export function NTTableItem({ contents, connection }: NTTableItemProps) {
@@ -32,6 +48,11 @@ export function NTTableItem({ contents, connection }: NTTableItemProps) {
           contents.expanded = !contents.expanded;
           // Emit the TableUpdated event to trigger a rerender of the table:
           connection.events.emit(NTConnectionEvents.TableUpdated, `NTTableItem.onPress:${contents.fullName}`);
+
+          // If we're collapsed, hide all children and unregister their publishers
+          if (!contents.expanded) {
+            hideAndUnpublishAllChildTopics(connection, contents);
+          }
         }}
       >
         { /* Dropdown arrow */}
@@ -52,18 +73,9 @@ export function NTTableItem({ contents, connection }: NTTableItemProps) {
     );
   } else {
     // This is an NTTopic
-    const [, setLastUpdate] = useState(contents.lastUpdate);
+    const _ = useNTTopicUpdated(connection, contents); // This will trigger a rerender on change
     const [expanded, setExpanded] = useState(contents.expanded);
     const [updatePressed, setUpdatePressed] = useState(false); // Only used if expanded
-
-    // Listen for a future change
-    if (contents.fullName in UpdateListeners) {
-      UpdateListeners[contents.fullName].remove();
-    }
-
-    UpdateListeners[contents.fullName] = connection.events.addListener(NTConnectionEvents.TopicUpdated + contents.fullName, () => {
-      setLastUpdate(contents.lastUpdate);
-    });
 
     return (
       <Pressable 
