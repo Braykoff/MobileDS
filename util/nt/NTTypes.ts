@@ -75,6 +75,35 @@ class NTStringTopic extends NTTopic {
   }
 }
 
+/** NT Topic containing an array */
+export class NTArrayTopic extends NTTopic {
+  public editable = NTEditType.Uneditable;
+
+  private value: any[] | null = null;
+
+  public getValue(): string {
+    if (this.value === null) {
+      return "null";
+    }
+
+    return this.value.toString();
+  }
+
+  /** Returns the current value as a string array (for CameraStreams) */
+  public getValueAsStringArray(): string[] {
+    if (this.value === null) return [];
+    return this.value;
+  }
+
+  public setValue(newValue: any[]): void {
+    this.value = newValue;
+  }
+
+  public convertValue(value: string): any {
+    // Arrays can't be edited
+    throw "NTArrayTopic doesn't support converting values";
+  }
+}
 
 /** NT Topic containing raw data */
 class NTRawDataTopic extends NTTopic {
@@ -96,7 +125,7 @@ class NTRawDataTopic extends NTTopic {
 
   public convertValue(value: string): any {
     // Raw types can't be edited
-    return "not supported";
+    throw "NTRawDataTopic doesn't support converting values";
   }
 }
 
@@ -119,15 +148,15 @@ export function createTypedNTTopic(
     case "json":
       return new NTStringTopic(fullName, typeString, 4, id, rootNetworkTable);
     case "boolean[]":
-      return new NTRawDataTopic(fullName, typeString, 16, id, rootNetworkTable);
+      return new NTArrayTopic(fullName, typeString, 16, id, rootNetworkTable);
     case "double[]":
-      return new NTRawDataTopic(fullName, typeString, 17, id, rootNetworkTable);
+      return new NTArrayTopic(fullName, typeString, 17, id, rootNetworkTable);
     case "int[]":
-      return new NTRawDataTopic(fullName, typeString, 18, id, rootNetworkTable);
+      return new NTArrayTopic(fullName, typeString, 18, id, rootNetworkTable);
     case "float[]":
-      return new NTRawDataTopic(fullName, typeString, 19, id, rootNetworkTable);
+      return new NTArrayTopic(fullName, typeString, 19, id, rootNetworkTable);
     case "string[]":
-      return new NTRawDataTopic(fullName, typeString, 20, id, rootNetworkTable);
+      return new NTArrayTopic(fullName, typeString, 20, id, rootNetworkTable);
     default:
       // TODO: structs should be handled
       return new NTRawDataTopic(fullName, typeString, 5, id, rootNetworkTable);
