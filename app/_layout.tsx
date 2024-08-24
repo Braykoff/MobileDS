@@ -1,4 +1,4 @@
-import 'react-native-polyfill-globals/auto'; // Will polyfill all (for MessagePack)
+import { polyfill as polyfillEncoding } from "react-native-polyfill-globals/src/encoding"
 import * as SplashScreen from "expo-splash-screen";
 import * as SystemUI from 'expo-system-ui';
 import { useFonts } from "expo-font";
@@ -8,11 +8,12 @@ import { Asset } from "expo-asset"
 import { Stack } from "expo-router";
 
 SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
+polyfillEncoding(); // Globally polyfill encoding for MessagePack
 
 /**
  * @returns The app's main Stack layout
  */
-export default function MainLayout() {
+export default function MainLayout() {  
   // Set default background
   SystemUI.setBackgroundColorAsync(Colors.app.background);
 
