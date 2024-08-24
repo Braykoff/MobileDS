@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      html, document, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      body {
+        width: 100%;
+        height: 100%;
+        background-color: black;
+      }
+      #stream {
+        object-position: center;
+        object-fit: contain;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+  </head>
+  <body>
+    <img id="stream" src="" onerror="cycleImages();"/>
+    <script>
+      const streamElement = document.getElementById("stream");
+
+      var videoSources = [];
+      var currentVideoSource = 0;
+
+      /** Cycles to the next image */
+      function cycleImages() {
+        if (videoSources.length == 0) {
+          return;
+        }
+
+        currentVideoSource += 1;
+
+        if (currentVideoSource >= videoSources.length) {
+          currentVideoSource = 0;
+        }
+
+        streamElement.setAttribute("src", videoSources[currentVideoSource]);
+      }
+
+      /** Adds a camera source (with a base64 encoded address) */
+      function addCameraSource(source) {
+        source = atob(source);
+        videoSources.push(source);
+
+        if (videoSources.length == 1) {
+          // This is the first video
+          streamElement.setAttribute("src", source);
+        }
+      }
+    </script>
+  </body>
+</html>
