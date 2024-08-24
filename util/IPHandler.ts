@@ -34,16 +34,16 @@ export function isValidTeamNumber(input: string): boolean {
  * @return A formatted IP address (10.TE.AM.2)
  */
 export function teamNumberToIPAddress(teamNumber: string): string {
-  if (teamNumber.length == 1 || teamNumber.length == 2) {
+  if (teamNumber.length === 1 || teamNumber.length === 2) {
     // 10.0.X.2 or 10.0.XX.2
     return `10.0.${teamNumber}.2`;
-  } else if (teamNumber.length == 3) {
+  } else if (teamNumber.length === 3) {
     // 10.X.XX.2
     return `10.${teamNumber.substring(0, 1)}.${teamNumber.substring(1, 3)}.2`;
-  } else if (teamNumber.length == 4) {
+  } else if (teamNumber.length === 4) {
     // 10.XX.XX.2
     return `10.${teamNumber.substring(0, 2)}.${teamNumber.substring(2, 4)}.2`;
-  } else if (teamNumber.length == 5) {
+  } else if (teamNumber.length === 5) {
     // 10.XXX.XX.2
     return `10.${teamNumber.substring(0, 3)}.${teamNumber.substring(3, 5)}.2`;
   } else {
@@ -62,8 +62,8 @@ export function isValidHost(input: string): boolean {
     input.length >= 1 && // Check for empty string
     regexHostAddress.test(input) && // Check if only has letters, numbers, periods, and dashes
     !regexDoublePeriods.test(input) && // Check for multiple consecutive periods
-    input.indexOf(".") != -1 && // Check that periods exist
-    input.at(0) != "." && // Check for leading period
-    input.at(-1) != "." // Check for trailing period
+    input.indexOf(".") !== -1 && // Check that periods exist
+    input.at(0) !== "." && // Check for leading period
+    input.at(-1) !== "." // Check for trailing period
   );
 }

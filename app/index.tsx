@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Alert, TextInput, Pressable } from "react-native";
+import { Text, View, StyleSheet, Alert, TextInput } from "react-native";
 import { openURL } from "expo-linking";
 import { useEffect, useState } from "react";
 import * as SystemUI from "expo-system-ui";
@@ -10,6 +10,7 @@ import { NTConnection, setCurrentNTConnection } from "@/util/nt/NTComms";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { getStoredData, setStoredData, StorageKeys } from "@/util/StorageManager";
 import { Router, useRouter } from "expo-router";
+import { ColoredPressable } from "@/components/ColoredPressable";
 
 /**
  * Called once "Connect" button is pressed.
@@ -50,10 +51,6 @@ export default function IndexScreen() {
   // Team number entry state
   const [teamNumberInput, setTeamNumberInput] = useState("");
 
-  // Button hover states
-  const [connectBttnHover, setConnectBttnHover] = useState(false);
-  const [githubBttnHover, setGithubBttnHover] = useState(false);
-
   // Try to load previous input from storage
   useEffect(() => {
     const loadLastInput = async () => {
@@ -84,23 +81,23 @@ export default function IndexScreen() {
           onChangeText={ (text) => setTeamNumberInput(text) }
         />
         { /* Connect button */}
-        <Pressable 
-          style={[styles.buttonContainer, { backgroundColor: !connectBttnHover ? Colors.app.accentColor : Colors.app.accentColorDark }]}
-          onPressIn={ () => setConnectBttnHover(true) }
-          onPressOut={ () => setConnectBttnHover(false) }
+        <ColoredPressable 
+          defaultColor={Colors.app.accentColor}
+          hoverColor={Colors.app.accentColorDark}
+          style={styles.buttonContainer}
           onPress={ () => beginConnection(teamNumberInput, router) }
         >
           <Text style={styles.button}>Connect</Text>
-        </Pressable>
+        </ColoredPressable>
         { /* GitHub button */}
-        <Pressable 
-          style={[styles.buttonContainer, { backgroundColor: !githubBttnHover ? Colors.app.accentColor : Colors.app.accentColorDark }]}
-          onPressIn={ () => setGithubBttnHover(true) }
-          onPressOut={ () => setGithubBttnHover(false) }
+        <ColoredPressable 
+          defaultColor={Colors.app.accentColor} 
+          hoverColor={Colors.app.accentColorDark}
           onPress={ () => openURL(GithubLink) }
+          style={styles.buttonContainer}
         >
           <Text style={styles.button}>Open GitHub</Text>
-        </Pressable>
+        </ColoredPressable>
       </View>
     </View>
   );

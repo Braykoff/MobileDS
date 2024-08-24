@@ -16,7 +16,7 @@ export function useNTConnected(connection: NTConnection): boolean {
     return () => {
       listener.remove();
     }
-  }, []);
+  }, [connection]);
 
   return isConnected;
 }
@@ -35,7 +35,7 @@ export function useNTTableUpdated(connection: NTConnection) {
     return () => {
       listener.remove();
     }
-  }, []);
+  }, [connection]);
 
   return lastUpdate;
 }
@@ -54,7 +54,7 @@ export function useNTTopicUpdated(connection: NTConnection, topic: NTTopic) {
     return () => {
       listener.remove();
     }
-  }, []);
+  }, [connection, topic.fullName, topic.lastUpdate]);
 
   return lastUpdate;
 }

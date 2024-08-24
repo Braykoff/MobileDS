@@ -5,7 +5,7 @@ export enum NTEditType {
 
 /** Removes the leading slash in a name, if it exists. */
 function removeLeadingSlash(input: string): string {
-  if (input.charAt(0) == "/") return input.substring(1);
+  if (input.charAt(0) === "/") return input.substring(1);
   else return input;
 }
 

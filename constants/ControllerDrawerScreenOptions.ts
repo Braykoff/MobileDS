@@ -30,13 +30,15 @@ const defaultScreenOptions: DrawerNavigationOptions = {
 }
 
 /** Creates DrawerNavigationOptions using the current NTConnection */
-export function createDrawerOptions(connected: boolean, address: string): DrawerNavigationOptions {
+export function createDrawerOptions(connection: NTConnection): DrawerNavigationOptions {
+  var connected = connection.isConnected();
+
   return {
     ...defaultScreenOptions,
     headerTitleStyle: {
       fontFamily: "Montserrat-Bold",
       color: connected ? Colors.controllerDrawer.connectedLabel : Colors.controllerDrawer.notConnectedLabel
     },
-    headerTitle: `${ connected ? ConnectedSymbol : NotConnectedSymbol } ${ address }`
+    headerTitle: `${ connected ? ConnectedSymbol : NotConnectedSymbol } ${ connection.address }`
   }
 }

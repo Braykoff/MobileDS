@@ -1,4 +1,3 @@
-import { ExceptionText } from "@/components/ExceptionText";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 import { getCurrentNTConnection } from "@/util/nt/NTComms";
 import { useNTConnected } from "@/util/nt/NTHooks";
@@ -15,7 +14,7 @@ export default function CamerasScreen() {
   
   if (ntConnection == null) {
     // This should never run
-    return ExceptionText("There is no current NT connection");
+    throw "NT connection is null";
   }
   
   // Listen for status change
@@ -23,8 +22,8 @@ export default function CamerasScreen() {
   const isNTConnected = useNTConnected(ntConnection);
 
   useEffect(() => {
-    navigation.setOptions(createDrawerOptions(isNTConnected, ntConnection.address));
-  }, [isNTConnected]);
+    navigation.setOptions(createDrawerOptions(ntConnection));
+  }, [navigation, ntConnection, isNTConnected]);
   
   return (
     <View>

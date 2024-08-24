@@ -42,7 +42,7 @@ class NTNumberTopic extends NTTopic {
   }
 
   public convertValue(value: string): any {
-    if (this.typeInt == 2) {
+    if (this.typeInt === 2) {
       // This is an integer topic
       return parseInt(value);
     } else {
@@ -80,7 +80,7 @@ class NTStringTopic extends NTTopic {
 class NTRawDataTopic extends NTTopic {
   public editable = NTEditType.Uneditable;
   
-  private value: Object | null = null;
+  private value: object | null = null;
 
   public getValue(): string {
     if (this.value === null) {

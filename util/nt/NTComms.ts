@@ -3,7 +3,6 @@ import { NTTable, NTTopic } from "./NTData";
 import { decodeMulti, encode } from "@msgpack/msgpack";
 import { createTypedNTTopic } from "./NTTypes";
 import { CustomEventEmitter } from "../CustomEventEmitter";
-import { EventEmitter } from "@react-navigation/native";
 
 /** The first argument of every event will be a string describing who emitted the event, for 
  * debugging. */
@@ -123,7 +122,7 @@ export class NTConnection {
         for (let msg of data) {
           var id = msg[0];
 
-          if (id == -1) {
+          if (id === -1) {
             // This is a timestamp response
             var receiveTS = msg[3] + (0.5 * (microseconds(0) - msg[3]));
             this.timeOffset = msg[1] - receiveTS;
@@ -148,13 +147,13 @@ export class NTConnection {
         for (let msg of data) {
           if (msg["method"] === "announce") {
             // A new topic
-            if (msg["params"]["pubuid"] != undefined) {
+            if (msg["params"]["pubuid"] !== undefined) {
               // This is a response to a publish request
               //this.ntTopics[msg["params"]["pubuid"]].hasPublishId = true;
               continue;
             }
 
-            var id = msg["params"]["id"];
+            const id = msg["params"]["id"];
 
             this.ntTopics[id] = createTypedNTTopic(
               msg["params"]["name"], 
@@ -165,10 +164,10 @@ export class NTConnection {
             tableUpdated = true;
           } else if (msg["method"] === "unannounce") {
             // A topic was deleted
-            var id = msg["params"]["id"]
+            const id = msg["params"]["id"]
 
             if (id in this.ntTopics) {
-              var topic = this.ntTopics[id];
+              const topic = this.ntTopics[id];
 
               console.log(`Topic ${id} unannounced (${topic.fullName})`);
 

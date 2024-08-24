@@ -1,10 +1,7 @@
-import { DrawerNavigationOptions } from "@react-navigation/drawer";
 import { Drawer } from 'expo-router/drawer';
-import { ConnectedSymbol, NotConnectedSymbol } from "@/constants/Constants";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { getCurrentNTConnection } from "@/util/nt/NTComms";
-import { ExceptionText } from "@/components/ExceptionText";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 
 //const Drawer = createDrawerNavigator<ControllerDrawerParamList>();
@@ -16,11 +13,7 @@ export default function ControllerLayout() {
   const nt = getCurrentNTConnection();
 
   if (nt == null) {
-    return ExceptionText("There is no current NT connection");
-  }
-
-  const onLoadTitle: DrawerNavigationOptions = {
-    headerTitle: `${nt.isConnected() ? ConnectedSymbol : NotConnectedSymbol} ${ nt.address }`
+    throw "NT connection is null";
   }
 
   // Layout

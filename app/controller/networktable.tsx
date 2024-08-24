@@ -1,15 +1,15 @@
-import { FlatList, StyleSheet, View } from "react-native";
-import { getCurrentNTConnection, NTConnectionEvents } from "@/util/nt/NTComms";
-import { ExceptionText } from "@/components/ExceptionText";
+import { FlatList, StyleSheet } from "react-native";
+import { getCurrentNTConnection } from "@/util/nt/NTComms";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
-import { NTTableItem } from "@/components/NTTableItem";
 import { NTItem, NTTable } from "@/util/nt/NTData";
 import { useEffect, useState } from "react";
 import { scale } from "react-native-size-matters";
 import { NTTableEmptyItem } from "@/components/NTTableEmptyItem";
-import { useFocusEffect, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNTConnected, useNTTableUpdated } from "@/util/nt/NTHooks";
+import { NTTableSubtableItem } from "@/components/NTTableSubtableItem";
+import { NTTableTopicItem } from "@/components/NTTableTopicItem";
 
 /** Ran recursively to populate a list with NTItems to render. */
 function buildRenderedListRecursive(table: NTTable, rendered: NTItem[]) {
@@ -44,15 +44,15 @@ export default function NetworkTableScreen() {
   
   if (ntConnection == null) {
     // This should never run
-    return ExceptionText("There is no current NT connection");
+    throw "NT connection is null";
   }
   
   // Listen for status change
   const isNTConnected = useNTConnected(ntConnection);
 
   useEffect(() => {
-    navigation.setOptions(createDrawerOptions(isNTConnected, ntConnection.address));
-  }, [isNTConnected]);
+    navigation.setOptions(createDrawerOptions(ntConnection));
+  }, [navigation, ntConnection, isNTConnected]);
   
   // Create rendered NT table
   const [renderedNTTable, setRenderedNTTable] = useState(buildRenderedList(ntConnection.rootNetworkTable));
@@ -62,14 +62,22 @@ export default function NetworkTableScreen() {
 
   useEffect(() => {
     setRenderedNTTable(buildRenderedList(ntConnection.rootNetworkTable));
-  }, [tableUpdateListener]);
+  }, [ntConnection.rootNetworkTable, tableUpdateListener]);
   
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         style={styles.table}
         data={renderedNTTable}
-        renderItem={({item}) => <NTTableItem contents={item} connection={ntConnection} />}
+        renderItem={({item}) => {
+          if (item instanceof NTTable) {
+            // This item is a subtable
+            return (<NTTableSubtableItem table={item} connection={ntConnection} />);
+          } else {
+            // This item is a topic
+            return (<NTTableTopicItem topic={item} connection={ntConnection} />)
+          }
+        }}
         ListEmptyComponent={ <NTTableEmptyItem /> }
         keyExtractor={(item: NTItem) => item.fullName}
       />
