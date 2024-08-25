@@ -11,6 +11,7 @@ import { RFPercentage } from "react-native-responsive-fontsize";
 import { getStoredData, setStoredData, StorageKeys } from "@/util/StorageManager";
 import { Router, useRouter } from "expo-router";
 import { ColoredPressable } from "@/components/ColoredPressable";
+import { DSConnection, setCurrentDSConnection } from "@/util/ds/DSComms";
 
 /**
  * Called once "Connect" button is pressed.
@@ -33,6 +34,7 @@ function beginConnection(input: string, router: Router) {
 
   // Connect to robot
   setCurrentNTConnection(new NTConnection(input));
+  setCurrentDSConnection(new DSConnection(input));
 
   // Go to controller tabs
   router.replace("/controller");

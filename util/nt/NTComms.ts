@@ -34,7 +34,7 @@ export class NTConnection {
   public readonly events: CustomEventEmitter;
   
   public constructor(address: string) {
-    // Create emitter:
+    // Create emitter
     this.events = new CustomEventEmitter(`NT (${address})`);
 
     // Set addresses

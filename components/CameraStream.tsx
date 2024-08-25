@@ -22,8 +22,8 @@ export function CameraStream({urls, style} : CameraStreamProps) {
       textInteractionEnabled={false}
       setBuiltInZoomControls={false}
       injectedJavaScript={ formatInjectedJS(urls) }
-      onError={ () => { console.log("Error!"); } }
-      onMessage={() => {}}
+      onError={ () => {} }
+      onMessage={ () => {} }
     />
   );
 }

@@ -11,6 +11,12 @@ import { Text, View, StyleSheet } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/** Formats the text that displays the camera index */
+function cameraIndexText(index: number, numberOfCameras: number): string {
+  if (numberOfCameras == 0) { return "0/0"; }
+  return `${index+1}/${numberOfCameras}`;
+}
+
 /** The screen for viewing camera streams. */
 export default function CamerasScreen() {
   const navigation = useNavigation();
@@ -33,7 +39,6 @@ export default function CamerasScreen() {
   // Currently viewed camera
   const [currentStream, setCurrentStream] = useState(0);
   const camera = getCamera(currentStream, ntConnection);
-  console.log(getStreamsOfCamera(camera));
   
   return (
     <SafeAreaView style={styles.container}>
@@ -57,7 +62,7 @@ export default function CamerasScreen() {
         </ColoredPressable>
         {/* Title */}
         <Text style={styles.videoTitle} numberOfLines={1}>
-          { getTitleOfCamera(camera) } ({currentStream+1}/{getNumberOfCameras(ntConnection)})
+          { getTitleOfCamera(camera) } ({ cameraIndexText(currentStream, getNumberOfCameras(ntConnection)) })
         </Text>
         {/* Next button */}
         <ColoredPressable 
