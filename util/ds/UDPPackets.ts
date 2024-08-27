@@ -5,7 +5,7 @@ const textEncoder = new TextEncoder();
 /** Tries to get the user's current timezone */
 function getTimeZone(): string {
   var tz = (new Date()).toLocaleTimeString(undefined, {timeZoneName: "short"}).split(" ").pop();
-  return (tz == undefined || tz.length > 5) ? "UCT" : tz;
+  return (tz === undefined || tz.length > 5) ? "UCT" : tz;
 }
 
 /** Creates a new buffer containing the date and timezone, for the initial packet */

@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 /** Formats the text that displays the camera index */
 function cameraIndexText(index: number, numberOfCameras: number): string {
-  if (numberOfCameras == 0) { return "0/0"; }
+  if (numberOfCameras === 0) { return "0/0"; }
   return `${index+1}/${numberOfCameras}`;
 }
 
@@ -24,7 +24,7 @@ export default function CamerasScreen() {
   // Get NTConnection
   const ntConnection = getCurrentNTConnection();
   
-  if (ntConnection == null) {
+  if (ntConnection === null) {
     // This should never run
     throw "NT connection is null";
   }
