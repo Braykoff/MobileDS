@@ -3,6 +3,7 @@ import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { getCurrentNTConnection } from "@/util/nt/NTComms";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
+import { getCurrentDSConnection } from '@/util/ds/DSComms';
 
 //const Drawer = createDrawerNavigator<ControllerDrawerParamList>();
 /**
@@ -11,14 +12,15 @@ import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 export default function ControllerLayout() {
   // Header title setup
   const nt = getCurrentNTConnection();
+  const ds = getCurrentDSConnection();
 
-  if (nt == null) {
-    throw "NT connection is null";
+  if (nt == null || ds == null) {
+    throw `A connection is null (nt: ${nt}, ds: ${ds})`;
   }
 
   // Layout
   return (
-    <Drawer initialRouteName="networktable" screenOptions={ createDrawerOptions(nt) }>
+    <Drawer initialRouteName="networktable" screenOptions={ createDrawerOptions(nt, ds) }>
       {/* Driverstation Screen */}
       <Drawer.Screen 
         name="driverstation" 
@@ -45,6 +47,18 @@ export default function ControllerLayout() {
             <Ionicons name="camera" size={size} color={ focused ? Colors.app.accentColorDark : Colors.controllerDrawer.defaultItemColor } />
           ),
           drawerLabel: "Cameras"
+        }} />
+      {/* Disconnect */}
+      <Drawer.Screen
+        name="disconnect"
+        options={{
+          drawerIcon: ({focused, size}) => (
+            <Ionicons name="exit" size={size} color={ Colors.controllerDrawer.disconnectButtonColor } />
+          ),
+          drawerLabel: "Disconnect",
+          drawerLabelStyle: {
+            color: Colors.controllerDrawer.disconnectButtonColor
+          }
         }} />
     </Drawer>
   );

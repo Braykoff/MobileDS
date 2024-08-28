@@ -13,9 +13,14 @@ export class RobotStateData {
   public estop = false;
   public enabled = false;
   public mode = ControlMode.Teleop;
-  public dsPosition = DriverStationPosition.Red1;
+  public dsPosition = DriverStationPosition.Blue1;
   public requestRoboRIOReboot = false; // Cleared once UDP packet is sent
   public requestCodeRestart = false; // Cleared once UDP packet is sent
+  public gameSpecificMessage = "";
+
+  public browningOut = false;
+  public codeRunning = true; // If false, code is initializing
+  public batteryVoltage = 0;
 
   // Controller (imitates XBox controller)
   public joystickIndex = 0;

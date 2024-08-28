@@ -14,7 +14,9 @@ export const Colors = {
   },
   controllerDrawer: {
     defaultItemColor: "#363636",
+    disconnectButtonColor: "maroon",
     connectedLabel: "green",
+    midConnectionLabel: "orange", // If only some connections are bad
     notConnectedLabel: "red"
   },
   networkTable: {

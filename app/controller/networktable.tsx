@@ -10,6 +10,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNTConnected, useNTTableUpdated } from "@/util/nt/NTHooks";
 import { NTTableSubtableItem } from "@/components/NTTableSubtableItem";
 import { NTTableTopicItem } from "@/components/NTTableTopicItem";
+import { getCurrentDSConnection } from "@/util/ds/DSComms";
+import { useDSConnected } from "@/util/ds/DSHooks";
 
 /** Ran recursively to populate a list with NTItems to render. */
 function buildRenderedListRecursive(table: NTTable, rendered: NTItem[]) {
@@ -39,20 +41,22 @@ function buildRenderedList(table: NTTable): NTItem[] {
 export default function NetworkTableScreen() {
   const navigation = useNavigation();
   
-  // Get NTConnection
+  // Get connection
   const ntConnection = getCurrentNTConnection();
+  const dsConnection = getCurrentDSConnection();
   
-  if (ntConnection == null) {
+  if (ntConnection == null || dsConnection == null) {
     // This should never run
-    throw "NT connection is null";
+    throw `Connection is null (nt: ${ntConnection}, ds: ${dsConnection})`;
   }
   
   // Listen for status change
   const isNTConnected = useNTConnected(ntConnection);
+  const isDSConnected = useDSConnected(dsConnection);
 
   useEffect(() => {
-    navigation.setOptions(createDrawerOptions(ntConnection));
-  }, [navigation, ntConnection, isNTConnected]);
+    navigation.setOptions(createDrawerOptions(ntConnection, dsConnection));
+  }, [navigation, ntConnection, dsConnection, isNTConnected, isDSConnected]);
   
   // Create rendered NT table
   const [renderedNTTable, setRenderedNTTable] = useState(buildRenderedList(ntConnection.rootNetworkTable));

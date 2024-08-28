@@ -7,6 +7,7 @@ interface CustomEmitterSubscription {
   remove(): void;
 }
 
+/** Custom event emitter that keeps track of emitter counts to debug resource leaks */
 export class CustomEventEmitter {
   private emitter = new EventEmitter();
   private listeners = new Set<EmitterSubscription>();

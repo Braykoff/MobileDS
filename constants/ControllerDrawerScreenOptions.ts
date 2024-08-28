@@ -2,7 +2,8 @@ import { DrawerNavigationOptions } from "@react-navigation/drawer"
 import { Colors } from "./Colors"
 import { scale } from "react-native-size-matters"
 import { NTConnection } from "@/util/nt/NTComms"
-import { ConnectedSymbol, NotConnectedSymbol } from "./Constants"
+import { ConnectedSymbol, MidConnectedSymbol, NotConnectedSymbol } from "./Constants"
+import { DSConnection } from "@/util/ds/DSComms"
 
 // Default Drawer options
 const defaultScreenOptions: DrawerNavigationOptions = {
@@ -29,16 +30,19 @@ const defaultScreenOptions: DrawerNavigationOptions = {
   headerTintColor: Colors.app.accentColor,
 }
 
-/** Creates DrawerNavigationOptions using the current NTConnection */
-export function createDrawerOptions(connection: NTConnection): DrawerNavigationOptions {
-  var connected = connection.isConnected();
+/** Creates DrawerNavigationOptions using the current NTConnection and DSConnection */
+export function createDrawerOptions(nt: NTConnection, ds: DSConnection): DrawerNavigationOptions {
+  const allConnected = nt.isConnected() && ds.isConnected();
+  const noConnected = !nt.isConnected() && !ds.socketUDP.getIsSendingPackets() && !ds.socketTCP.getIsSocketOpen();
+
+  const symbol = allConnected ? ConnectedSymbol : (noConnected ? NotConnectedSymbol : MidConnectedSymbol);
 
   return {
     ...defaultScreenOptions,
     headerTitleStyle: {
       fontFamily: "Montserrat-Bold",
-      color: connected ? Colors.controllerDrawer.connectedLabel : Colors.controllerDrawer.notConnectedLabel
+      color: allConnected ? Colors.controllerDrawer.connectedLabel : (noConnected ? Colors.controllerDrawer.notConnectedLabel : Colors.controllerDrawer.midConnectionLabel)
     },
-    headerTitle: `${ connected ? ConnectedSymbol : NotConnectedSymbol } ${ connection.address }`
+    headerTitle: `${ symbol } ${ nt.address }`
   }
 }

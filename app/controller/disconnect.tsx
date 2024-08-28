@@ -3,14 +3,16 @@ import { getCurrentDSConnection } from "@/util/ds/DSComms";
 import { useDSConnected } from "@/util/ds/DSHooks";
 import { getCurrentNTConnection } from "@/util/nt/NTComms";
 import { useNTConnected } from "@/util/nt/NTHooks";
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { RFPercentage } from "react-native-responsive-fontsize";
 
-/** The screen for driving the robot. */
-export default function DriverStationScreen() {
+/** Screen that immediately disconnects all connections and redirect back to the index page */
+export default function DisconnectScreen() {
   const navigation = useNavigation();
-
+  const router = useRouter();
+  
   // Get connection
   const ntConnection = getCurrentNTConnection();
   const dsConnection = getCurrentDSConnection();
@@ -27,10 +29,32 @@ export default function DriverStationScreen() {
   useEffect(() => {
     navigation.setOptions(createDrawerOptions(ntConnection, dsConnection));
   }, [navigation, ntConnection, dsConnection, isNTConnected, isDSConnected]);
+  
+  // Disconnect
+  useEffect(() => {
+    ntConnection.disconnect();
+    dsConnection.disconnect();
+    console.log("Disconnected both connections");
+    router.replace("/");
+  });
 
   return (
-    <View>
-      <Text>DS</Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>Disconnecting...</Text>
     </View>
   );
 }
+
+// Styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  text: {
+    fontFamily: "Montserrat-Bold",
+    color: "red",
+    textAlign: "center",
+    fontSize: RFPercentage(3)
+  }
+});

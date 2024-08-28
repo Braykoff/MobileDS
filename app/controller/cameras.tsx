@@ -2,6 +2,8 @@ import { CameraStream } from "@/components/CameraStream";
 import { ColoredPressable } from "@/components/ColoredPressable";
 import { Colors } from "@/constants/Colors";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
+import { getCurrentDSConnection } from "@/util/ds/DSComms";
+import { useDSConnected } from "@/util/ds/DSHooks";
 import { getCamera, getNumberOfCameras, getStreamsOfCamera, getTitleOfCamera } from "@/util/nt/CameraStreamGetter";
 import { getCurrentNTConnection } from "@/util/nt/NTComms";
 import { useNTConnected } from "@/util/nt/NTHooks";
@@ -21,20 +23,22 @@ function cameraIndexText(index: number, numberOfCameras: number): string {
 export default function CamerasScreen() {
   const navigation = useNavigation();
   
-  // Get NTConnection
+  // Get connection
   const ntConnection = getCurrentNTConnection();
+  const dsConnection = getCurrentDSConnection();
   
-  if (ntConnection === null) {
+  if (ntConnection == null || dsConnection == null) {
     // This should never run
-    throw "NT connection is null";
+    throw `Connection is null (nt: ${ntConnection}, ds: ${dsConnection})`;
   }
   
   // Listen for status change
   const isNTConnected = useNTConnected(ntConnection);
+  const isDSConnected = useDSConnected(dsConnection);
 
   useEffect(() => {
-    navigation.setOptions(createDrawerOptions(ntConnection));
-  }, [navigation, ntConnection, isNTConnected]);
+    navigation.setOptions(createDrawerOptions(ntConnection, dsConnection));
+  }, [navigation, ntConnection, dsConnection, isNTConnected, isDSConnected]);
 
   // Currently viewed camera
   const [currentStream, setCurrentStream] = useState(0);

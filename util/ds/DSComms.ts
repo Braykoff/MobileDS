@@ -2,14 +2,7 @@ import { CustomEventEmitter } from "../CustomEventEmitter";
 import { UDPSocket } from "./UDPSocket";
 import { TCPSocket } from "./TCPSocket";
 import { RobotStateData } from "./RobotState";
-
-/** Events emitted by the event emitter in DSConnection */
-export const DSConnectionEvents = {
-  UDPSocketConnectionStatusChanged: "udpSocketConnectionChanged",
-  TCPSocketConnectionStatusChanged: "tcpSocketConnectionChanged",
-  RobotStateChanged: "robotStateChanged",
-  JoystickIndexChanged: "joystickIndexChanged"
-}
+import { DSEvents } from "./DSEvents";
 
 export class DSConnection {
   public readonly address: string
@@ -27,8 +20,13 @@ export class DSConnection {
     this.address = address;
 
     // Open connections
-    this.socketUDP = new UDPSocket(this);
-    this.socketTCP = new TCPSocket(this);
+    this.socketUDP = new UDPSocket(this.address, this.state, this.events);
+    this.socketTCP = new TCPSocket(this.address, this.state, this.events);
+  }
+
+  /** Returns if both the UDP and TCP sockets are connected */
+  public isConnected() {
+    return this.socketUDP.getIsSendingPackets() && this.socketTCP.getIsSocketOpen();
   }
 
   /** Disconnects and closes the sockets */
@@ -40,7 +38,8 @@ export class DSConnection {
     this.socketTCP.disconnect();
 
     // Emit state change
-    this.events.emit(DSConnectionEvents.RobotStateChanged);
+    this.events.emit(DSEvents.RobotStateChanged);
+    this.events.removeAllListeners();
   }
 }
 
