@@ -4,5 +4,6 @@
  * invoker, for debugging. */
 export const DSEvents = {
   SocketConnectionChanged: "socketConnectionChanged",
+  RobotEStopChanged: "robotEstopChanged",
   RobotStateChanged: "robotStateChanged"
 }

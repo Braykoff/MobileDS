@@ -29,7 +29,7 @@ export default function DriverStationScreen() {
     navigation.setOptions(createDrawerOptions(ntConnection, dsConnection));
   }, [navigation, ntConnection, dsConnection, isNTConnected, isDSConnected]);
 
-  if (true) { // dsConnection.state.estop && dsConnection.isConnected()
+  if (dsConnection.state.estop && dsConnection.isConnected()) {
     // Robot is estopped, show warning message
     return (
       <View style={styles.estopContainer}>

@@ -5,7 +5,7 @@ import { getCurrentNTConnection } from "@/util/nt/NTComms";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 import { getCurrentDSConnection } from '@/util/ds/DSComms';
 import { DrawerNavigationOptions } from '@react-navigation/drawer';
-import { Alert, Button } from 'react-native';
+import { Alert } from 'react-native';
 import { ConnectedSymbol, NotConnectedSymbol } from '@/constants/Constants';
 
 /**
