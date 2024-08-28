@@ -30,7 +30,7 @@ export class TCPSocket {
     this.initSocket();
 
     // Set up keep alive interval
-    this.keepAliveInterval = setInterval(() => this.sendKeepAlivePacket, 2000);
+    this.keepAliveInterval = setInterval(() => this.sendKeepAlivePacket(), 2000);
   }
 
   /** Inits a new connection */
