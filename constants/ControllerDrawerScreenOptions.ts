@@ -33,7 +33,7 @@ const defaultScreenOptions: DrawerNavigationOptions = {
 /** Creates DrawerNavigationOptions using the current NTConnection and DSConnection */
 export function createDrawerOptions(nt: NTConnection, ds: DSConnection): DrawerNavigationOptions {
   const allConnected = nt.isConnected() && ds.isConnected();
-  const noConnected = !nt.isConnected() && !ds.socketUDP.getIsSendingPackets() && !ds.socketTCP.getIsSocketOpen();
+  const noConnected = !nt.isConnected() && !ds.socketUDP.getIsConnected() && !ds.socketTCP.getIsSocketOpen();
 
   const symbol = allConnected ? ConnectedSymbol : (noConnected ? NotConnectedSymbol : MidConnectedSymbol);
 

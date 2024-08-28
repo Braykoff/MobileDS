@@ -18,10 +18,11 @@ export class UDPSocket {
 
   private socket: UdpSocket;
   private closingSocket = false;
-  private isSendingPackets = false;
+  private isSocketConnected = false;
 
   private packetsLost = 0;
   private lastReceivedPacketSequence = -1;
+  private lastReceivedPacketTimestamp = -1;
 
   private packetTimeout: NodeJS.Timeout | undefined = undefined;
 
@@ -50,8 +51,8 @@ export class UDPSocket {
     // Once listening, start sending packets
     this.socket.once("listening", () => {
       this.packetTimeout = setTimeout(() => this.sendPacket(), 20);
-      this.isSendingPackets = true;
-      this.events.emit(DSEvents.SocketConnectionChanged);
+      this.isSocketConnected = true;
+      this.events.emit(DSEvents.SocketConnectionChanged, "UDPSocket:listening");
       console.log("Sending UDP packets");
     });
 
@@ -112,6 +113,12 @@ export class UDPSocket {
     this.state.requestRoboRIOReboot = false;
     this.state.requestCodeRestart = false;
 
+    if (this.isSocketConnected && Date.now() - this.lastReceivedPacketTimestamp > 500) {
+      // .5 seconds without a response, the robot may be disconnected
+      this.isSocketConnected = false;
+      this.events.emit(DSEvents.SocketConnectionChanged, "UDPSocket.sendPacket:timeout");
+    }
+
     if (startNextPacket) {
       this.packetTimeout = setTimeout(() => this.sendPacket(), 20); // Kick off next packet
     }
@@ -134,12 +141,20 @@ export class UDPSocket {
     this.state.batteryVoltage = msg.readUInt8(5) + (msg.readUInt8(6) / 256);
 
     // TODO rest of RoboRio's tags
+
+    // Keep track of inbound packets
     console.log(`Received message ${seq}`);
+    this.lastReceivedPacketTimestamp = Date.now();
+    
+    if (!this.isSocketConnected) {
+      this.isSocketConnected = true;
+      this.events.emit(DSEvents.SocketConnectionChanged, "UDPSocket.handlePacket");
+    }
   }
 
-  /** Gets whether packets have begun to be sent. */
-  public getIsSendingPackets(): boolean {
-    return this.isSendingPackets;
+  /** Gets whether packets are successfully being sent and received. */
+  public getIsConnected(): boolean {
+    return this.isSocketConnected;
   }
 
   /** Returns the percentage of packets from the RoboRIO that were lost */
@@ -156,8 +171,8 @@ export class UDPSocket {
     this.sendPacket(false); // Will flush most recent packet (usually a disable packet)
 
     this.closingSocket = true;
-    this.isSendingPackets = false;
+    this.isSocketConnected = false;
     this.socket.close();
-    this.events.emit(DSEvents.SocketConnectionChanged);
+    this.events.emit(DSEvents.SocketConnectionChanged, "UDPSocket.disconnect");
   }
 }

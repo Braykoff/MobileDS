@@ -4,18 +4,38 @@ import { Ionicons } from "@expo/vector-icons";
 import { getCurrentNTConnection } from "@/util/nt/NTComms";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 import { getCurrentDSConnection } from '@/util/ds/DSComms';
+import { DrawerNavigationOptions } from '@react-navigation/drawer';
+import { Alert, Button } from 'react-native';
+import { ConnectedSymbol, NotConnectedSymbol } from '@/constants/Constants';
 
-//const Drawer = createDrawerNavigator<ControllerDrawerParamList>();
 /**
  * @returns The controller screen's Drawer navigator
  */
 export default function ControllerLayout() {
-  // Header title setup
+  // Get connections
   const nt = getCurrentNTConnection();
   const ds = getCurrentDSConnection();
 
   if (nt == null || ds == null) {
     throw `A connection is null (nt: ${nt}, ds: ${ds})`;
+  }
+
+  // Connection info button
+  const connectionInfoHeaderButton: DrawerNavigationOptions = {
+    headerRight: () => (
+      <Ionicons 
+        name="information-circle-outline"
+        size={24}
+        onPress={ () => {
+          Alert.alert(
+            `Connected to ${nt.address}`, 
+            `NT WebSocket: ${nt.isConnected() ? `Good ${ConnectedSymbol}` : `Bad ${NotConnectedSymbol}`}\n` +
+            `DS UDP Socket: ${ds.socketUDP.getIsConnected() ? `Good ${ConnectedSymbol}` : `Bad ${NotConnectedSymbol}`}\n` +
+            `DS TCP Socket: ${ds.socketTCP.getIsSocketOpen() ? `Good ${ConnectedSymbol}` : `Bad ${NotConnectedSymbol}`}`
+          );
+        }}
+      />
+    )
   }
 
   // Layout
@@ -28,7 +48,8 @@ export default function ControllerLayout() {
           drawerIcon: ({focused, size}) => (
             <Ionicons name="game-controller" size={size} color={ focused ? Colors.app.accentColorDark : Colors.controllerDrawer.defaultItemColor } />
           ),
-          drawerLabel: "DriverStation"
+          drawerLabel: "DriverStation",
+          ...connectionInfoHeaderButton
         }} />
       {/* NetworkTable Screen */}
       <Drawer.Screen 
@@ -37,7 +58,8 @@ export default function ControllerLayout() {
           drawerIcon: ({focused, size}) => (
             <Ionicons name="globe" size={size} color={ focused ? Colors.app.accentColorDark : Colors.controllerDrawer.defaultItemColor } />
           ),
-          drawerLabel: "NetworkTables"
+          drawerLabel: "NetworkTables",
+          ...connectionInfoHeaderButton
         }} />
       {/* Cameras Screen */}
       <Drawer.Screen 
@@ -46,7 +68,8 @@ export default function ControllerLayout() {
           drawerIcon: ({focused, size}) => (
             <Ionicons name="camera" size={size} color={ focused ? Colors.app.accentColorDark : Colors.controllerDrawer.defaultItemColor } />
           ),
-          drawerLabel: "Cameras"
+          drawerLabel: "Cameras",
+          ...connectionInfoHeaderButton
         }} />
       {/* Disconnect */}
       <Drawer.Screen

@@ -26,7 +26,7 @@ export class DSConnection {
 
   /** Returns if both the UDP and TCP sockets are connected */
   public isConnected() {
-    return this.socketUDP.getIsSendingPackets() && this.socketTCP.getIsSocketOpen();
+    return this.socketUDP.getIsConnected() && this.socketTCP.getIsSocketOpen();
   }
 
   /** Disconnects and closes the sockets */
@@ -38,7 +38,7 @@ export class DSConnection {
     this.socketTCP.disconnect();
 
     // Emit state change
-    this.events.emit(DSEvents.RobotStateChanged);
+    this.events.emit(DSEvents.RobotStateChanged, "DSConnection.disconnect");
     this.events.removeAllListeners();
   }
 }

@@ -49,7 +49,7 @@ export class TCPSocket {
       this.sendJoystickPacket();
       this.sendGameSpecificMessage();
       console.log("Sending TCP packets");
-      this.events.emit(DSEvents.SocketConnectionChanged);
+      this.events.emit(DSEvents.SocketConnectionChanged, "TCPSocket.initSocket:createConnection");
     });
 
     // Listen for errors
@@ -59,7 +59,8 @@ export class TCPSocket {
 
     // Listen for socket closing
     this.socket.on("close", () => {
-      this.events.emit(DSEvents.SocketConnectionChanged);
+      this.isSocketOpen = false;
+      this.events.emit(DSEvents.SocketConnectionChanged, "TCPSocket.initSocket:onClose");
 
       if (this.reconnectInterval != null) {
         clearInterval(this.reconnectInterval);

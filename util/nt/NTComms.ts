@@ -107,7 +107,7 @@ export class NTConnection {
           this.initWSConnection();
         }, 2500);
 
-        console.log("Socket closed unexpectedly, attempting reconnection soon...");
+        //console.log("Socket closed unexpectedly, attempting reconnection soon...");
       }
     }
 
