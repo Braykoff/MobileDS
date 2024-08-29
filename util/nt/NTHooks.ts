@@ -7,7 +7,7 @@ export function useNTConnected(connection: NTConnection): boolean {
   return useEvent<boolean>(
     connection,
     NTConnectionEvents.ConnectionStatusChanged,
-    connection.isConnected
+    () => connection.isConnected()
   );
 }
 
