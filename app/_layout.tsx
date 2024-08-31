@@ -7,6 +7,7 @@ import { Colors } from "@/constants/Colors";
 import { Asset } from "expo-asset"
 import { Stack } from "expo-router";
 
+console.log("App has started");
 SplashScreen.preventAutoHideAsync(); // Keep showing splash screen (until fonts loaded)
 polyfillEncoding(); // Globally polyfill encoding for MessagePack
 

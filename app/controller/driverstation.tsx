@@ -1,3 +1,6 @@
+import { BatteryView } from "@/components/Driverstation/BatteryView";
+import { EnableDisableSwitcher } from "@/components/Driverstation/EnableDisableSwitcher";
+import { ModeSwitcher } from "@/components/Driverstation/ModeSwitcher";
 import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 import { getCurrentDSConnection } from "@/util/ds/DSComms";
 import { useDSConnected } from "@/util/ds/DSHooks";
@@ -7,6 +10,7 @@ import { useNavigation } from "expo-router";
 import { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 /** The screen for driving the robot. */
 export default function DriverStationScreen() {
@@ -42,9 +46,13 @@ export default function DriverStationScreen() {
   }
 
   return (
-    <View>
-      <Text>DS</Text>
-    </View>
+    <SafeAreaView>
+      <View style={styles.upperMenuContainer}>
+        <EnableDisableSwitcher connection={dsConnection} />
+        <ModeSwitcher connection={dsConnection} />
+        <BatteryView connection={dsConnection} />
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -60,5 +68,10 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
     fontSize: RFPercentage(3)
+  },
+  /* Upper Menu */
+  upperMenuContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between"
   }
 });

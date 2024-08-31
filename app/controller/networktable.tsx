@@ -4,12 +4,12 @@ import { createDrawerOptions } from "@/constants/ControllerDrawerScreenOptions";
 import { NTItem, NTTable } from "@/util/nt/NTData";
 import { useEffect, useState } from "react";
 import { scale } from "react-native-size-matters";
-import { NTTableEmptyItem } from "@/components/NTTableEmptyItem";
+import { NTTableEmptyItem } from "@/components/NTTable/NTTableEmptyItem";
 import { useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNTConnected, useNTTableUpdated } from "@/util/nt/NTHooks";
-import { NTTableSubtableItem } from "@/components/NTTableSubtableItem";
-import { NTTableTopicItem } from "@/components/NTTableTopicItem";
+import { NTTableSubtableItem } from "@/components/NTTable/NTTableSubtableItem";
+import { NTTableTopicItem } from "@/components/NTTable/NTTableTopicItem";
 import { getCurrentDSConnection } from "@/util/ds/DSComms";
 import { useDSConnected } from "@/util/ds/DSHooks";
 

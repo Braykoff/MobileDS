@@ -38,7 +38,7 @@ export class DSConnection {
     this.socketTCP.disconnect();
 
     // Emit state change
-    this.events.emit(DSEvents.RobotStateChanged, "DSConnection.disconnect");
+    this.events.emit(DSEvents.RobotEnabledStateChanged, "DSConnection.disconnect");
     this.events.removeAllListeners();
   }
 }

@@ -5,5 +5,6 @@
 export const DSEvents = {
   SocketConnectionChanged: "socketConnectionChanged",
   RobotEStopChanged: "robotEstopChanged",
-  RobotStateChanged: "robotStateChanged"
+  RobotEnabledStateChanged: "robotEnabledStateChanged",
+  RobotModeChanged: "robotModeChanged"
 }

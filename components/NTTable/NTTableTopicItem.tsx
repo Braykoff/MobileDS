@@ -6,7 +6,7 @@ import { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { scale } from "react-native-size-matters";
-import { ColoredPressable } from "./ColoredPressable";
+import { ColoredPressable } from "../ColoredPressable";
 
 type NTTableTopicItemProps = {
   topic: NTTopic,

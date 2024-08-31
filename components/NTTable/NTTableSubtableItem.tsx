@@ -4,7 +4,7 @@ import { NTTable } from "@/util/nt/NTData"
 import { View, Text, StyleSheet, Image } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { scale } from "react-native-size-matters";
-import { ColoredPressable } from "./ColoredPressable";
+import { ColoredPressable } from "../ColoredPressable";
 
 type NTSubtableItemProps = {
   table: NTTable,
@@ -36,7 +36,7 @@ export function NTTableSubtableItem({ table, connection }: NTSubtableItemProps) 
         style={[styles.ntDropdownArrow, {
           transform: [{ rotate: `${ table.expanded ? 90 : 0 }deg` }]
         }]}
-        source={require("../assets/images/dropdown-arrow.png")} />
+        source={require("../../assets/images/dropdown-arrow.png")} />
       { /* NTTable name */}
       <View style={{flex: 1}}>
         <Text 

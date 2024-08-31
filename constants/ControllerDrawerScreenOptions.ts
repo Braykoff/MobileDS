@@ -21,7 +21,7 @@ const defaultScreenOptions: DrawerNavigationOptions = {
   headerStyle: {
     height: scale(40),
     borderBottomColor: Colors.app.accentColor,
-    borderBottomWidth: scale(2)
+    borderBottomWidth: 2
   },
   headerTitleStyle: {
     fontFamily: "Montserrat-Bold",

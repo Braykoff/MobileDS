@@ -20,7 +20,6 @@ export function useEvent<T>(parent: ObjectWithEvents, event: string, getter: () 
     return () => {
       listener.remove();
     }
-    // no-eslint-disable-next-line
   }, [parent, event, getter]);
 
   return currentValue;

@@ -22,5 +22,14 @@ export const Colors = {
   networkTable: {
     ntTopicItemBackground: "#222222",
     ntTopicItemBackgroundHover: "#111111"
+  },
+  driverStation: {
+    enabledLight: "lime",
+    enabledDark: "green",
+    disabledLight: "red",
+    disabledDark: "maroon",
+    goodBattery: "green",
+    okBattery: "orange",
+    badBattery: "red"
   }
 };
