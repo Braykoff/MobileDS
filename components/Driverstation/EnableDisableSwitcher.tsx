@@ -1,7 +1,6 @@
 import { DSConnection } from "@/util/ds/DSComms";
-import { DSEvents } from "@/util/ds/DSEvents";
 import { useRobotEnabled } from "@/util/ds/DSHooks";
-import { StyleSheet, Alert } from "react-native"
+import { StyleSheet } from "react-native"
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { scale } from "react-native-size-matters";
 import { ColoredPressableWithText } from "../ColoredPressable";
@@ -11,28 +10,6 @@ const colors = Colors.driverStation; // Shorthand
 
 type EnabledDisabledSwitcherProps = {
   connection: DSConnection
-}
-
-/** Toggles robot's enabled/disable state */
-function toggleEnabled(connection: DSConnection) {
-  if (connection.state.enabled) {
-    // Need to disable
-    connection.state.enabled = false;
-  } else {
-    // Need to enable
-    if (!connection.isConnected()) {
-      Alert.alert(
-        "Unable to enable", 
-        `Please check you connection to the robot.\n(UDP connection is ` +
-        `${connection.socketUDP.getIsConnected() ? "good" : "bad"}, TCP connection is ` +
-        `${connection.socketTCP.getIsSocketOpen() ? "good" : "bad"})`
-      );
-      return;
-    }
-    connection.state.enabled = true;
-  }
-
-  connection.events.emit(DSEvents.RobotEnabledStateChanged); // Refresh
 }
 
 /** The enabled/disabled switcher in the driverstation tab */
@@ -51,7 +28,7 @@ export function EnableDisableSwitcher({connection}: EnabledDisabledSwitcherProps
       textStyle={styles.text}
       textNotHoveredStyle={{ color: enabled ? colors.enabledDark : colors.disabledDark }}
       textHoveredStyle={{ color: enabled ? colors.enabledLight : colors.disabledLight }}
-      onPress={ () => toggleEnabled(connection) }
+      onPress={ () => connection.setEnabled(!enabled) }
     />
   )
 }

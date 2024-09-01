@@ -19,8 +19,7 @@ function switchRobotMode(connection: DSConnection, newMode: ControlMode) {
 
   if (connection.state.enabled) {
     // Must disable first
-    connection.state.enabled = false;
-    connection.events.emit(DSEvents.RobotEnabledStateChanged);
+    connection.setEnabled(false);
   }
 
   connection.state.mode = newMode;
@@ -40,9 +39,9 @@ function SwitchModeButton(props: SwitchModeButtonProps) {
     <ColoredPressableWithText 
       defaultColor={ (props.currentMode === props.buttonMode) ? Colors.app.accentColor : "gray" } 
       hoverColor={ Colors.app.accentColor }
-      style={ styles.ModePressable }
+      style={ styles.modePressable }
       text={props.title}
-      textStyle={ styles.ModeText }
+      textStyle={ styles.modeText }
       textHoveredStyle={{ color: Colors.app.lightTextColor }}
       textNotHoveredStyle={{ color: (props.currentMode === props.buttonMode) ? Colors.app.lightTextColor : "black" }}
       onPress={ () => switchRobotMode(props.connection, props.buttonMode) }
@@ -87,11 +86,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexDirection: "column"
   },
-  ModePressable: {
+  modePressable: {
     flex: 1,
     justifyContent: "center"
   },
-  ModeText: {
+  modeText: {
     fontFamily: "Montserrat",
     textAlign: "center",
     fontSize: RFPercentage(1.5)

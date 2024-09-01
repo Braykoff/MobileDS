@@ -44,7 +44,8 @@
     "react-native-udp": "^4.1.7",
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.8.6",
-    "expo-updates": "~0.25.24"
+    "expo-updates": "~0.25.24",
+    "expo-battery": "~8.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

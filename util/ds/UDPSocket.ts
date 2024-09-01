@@ -17,6 +17,7 @@ export class UDPSocket {
   private events: CustomEventEmitter;
 
   private socket: UdpSocket;
+  private reconnectTimeout: NodeJS.Timeout | undefined = undefined;
   private closingSocket = false;
   private isSocketConnected = false;
 
@@ -27,8 +28,9 @@ export class UDPSocket {
   private packetTimeout: NodeJS.Timeout | undefined = undefined;
 
   // Outbound data
-  private outboundBuffer = Buffer.alloc(21);
+  private outboundBuffer = Buffer.alloc(46); // 6 joystick tags
   private outboundPacketSequenceNumber = 0;
+  private outboundPacketJoystickOffset = 0; // Byte offset of joystick tag
 
   public constructor(address: string, state: RobotStateData, events: CustomEventEmitter) {
     this.address = address;
@@ -37,16 +39,11 @@ export class UDPSocket {
 
     // Init static fields of outbound packet (setup mimics XBox Controller for code compatibility)
     this.outboundBuffer.writeUInt8(0x01, 2); // Comm version
-    this.outboundBuffer.writeUInt8(13 + 1, 6); // Joystick tag size (with ID)
-    this.outboundBuffer.writeUInt8(0x0c, 7); // Joystick tag ID
-    this.outboundBuffer.writeUInt8(6, 8); // Number of axes
-    this.outboundBuffer.writeUInt8(11, 15); // Number of buttons
-    this.outboundBuffer.writeUInt8(1, 18); // Number of POVs
-
-    this.outboundBuffer.writeInt16BE(-1, 19); // POV 0 value (-1 = unpressed)
+    this.reformatUDPPacketTags();
     
     // Open socket
     this.socket = dgram.createSocket({type: "udp4", debug: false});
+    this.socket.setMaxListeners(3);
 
     // Once listening, start sending packets
     this.socket.once("listening", () => {
@@ -59,13 +56,49 @@ export class UDPSocket {
     // Error listener
     this.socket.on("error", (err) => {
       console.log(`UDP Error: ${err}`);
+      this.isSocketConnected = false;
+      this.reconnectTimeout = setTimeout(() => this.bind(), 500);
     });
 
     // Handle inbound messages
     this.socket.on("message", (msg,) => this.handlePacket(msg));
 
     // Bind to socket
+    this.bind();
+  }
+
+  /** Binds the socket */
+  private bind() {
+    if (this.closingSocket || this.isSocketConnected) { return; }
     this.socket.bind(1150);
+  }
+
+  /** Updates the UDP packet so the joystick is at the correct index */
+  public reformatUDPPacketTags() {
+    var idx = 6; // First packet of tag
+
+    for (let joystickIndex = 0; joystickIndex < 6; joystickIndex++) {
+      if (joystickIndex === this.state.joystickIndex) {
+        // Joystick mimics Xbox controller for code compatibility
+        this.outboundPacketJoystickOffset = idx;
+        this.outboundBuffer.writeUInt8(13 + 1, idx); // Joystick tag size (with ID)
+        this.outboundBuffer.writeUInt8(0x0c, idx+1); // Joystick tag ID
+        this.outboundBuffer.writeUInt8(6, idx+2); // Number of axes
+        this.outboundBuffer.writeUInt8(11, idx+9); // Number of buttons
+        this.outboundBuffer.writeUInt8(0, idx+10); // First byte of buttons (never written to again)
+        this.outboundBuffer.writeUInt8(1, idx+12); // Number of POVs
+        this.outboundBuffer.writeInt16BE(-1, idx+13); // POV 0 value (-1 = unpressed)
+        idx += 15;
+      } else {
+        // Empty joystick
+        this.outboundBuffer.writeUInt8(4, idx); // Joystick tag size (with ID)
+        this.outboundBuffer.writeUInt8(0x0c, idx+1); // Joystick tag ID
+        this.outboundBuffer.writeUInt8(0, idx+2); // Number of axes
+        this.outboundBuffer.writeUInt8(0, idx+3); // Number of buttons
+        this.outboundBuffer.writeUInt8(0, idx+4); // Number of POVs
+        idx += 5;
+      }
+    }
   }
 
   /** Sends a single UDP packet */
@@ -85,19 +118,19 @@ export class UDPSocket {
     this.outboundBuffer.writeUInt8(this.state.dsPosition, 5);
 
     // Set joystick data (mimics Xbox Controller, triggers are axes)
-    this.outboundBuffer.writeInt8(this.state.leftTrigger ? 127 : 0, 11); // Left trigger axis
-    this.outboundBuffer.writeInt8(this.state.rightTrigger ? 127 : 0, 12); // Right trigger axis
-    this.outboundBuffer.writeInt8(axisValueToByte(this.state.leftJoystickX), 9); // Left stick X
-    this.outboundBuffer.writeInt8(axisValueToByte(this.state.leftJoystickY), 10); // Left stick Y
-    this.outboundBuffer.writeInt8(axisValueToByte(this.state.rightJoystickX), 13); // Right stick X
-    this.outboundBuffer.writeInt8(axisValueToByte(this.state.rightJoystickY), 14); // Right stick Y
+    this.outboundBuffer.writeInt8(this.state.leftTrigger ? 127 : 0, this.outboundPacketJoystickOffset + 5); // Left trigger axis
+    this.outboundBuffer.writeInt8(this.state.rightTrigger ? 127 : 0, this.outboundPacketJoystickOffset + 6); // Right trigger axis
+    this.outboundBuffer.writeInt8(axisValueToByte(this.state.leftJoystickX), this.outboundPacketJoystickOffset + 3); // Left stick X
+    this.outboundBuffer.writeInt8(axisValueToByte(this.state.leftJoystickY), this.outboundPacketJoystickOffset + 4); // Left stick Y
+    this.outboundBuffer.writeInt8(axisValueToByte(this.state.rightJoystickX), this.outboundPacketJoystickOffset + 7); // Right stick X
+    this.outboundBuffer.writeInt8(axisValueToByte(this.state.rightJoystickY), this.outboundPacketJoystickOffset + 8); // Right stick Y
 
     this.outboundBuffer.writeUInt8(
       (Number(this.state.aButton) << 1) |
       (Number(this.state.bButton) << 2) |
       (Number(this.state.xButton) << 3) |
       (Number(this.state.yButton) << 4),
-      17
+      this.outboundPacketJoystickOffset + 11
     );
 
     this.socket.send(
@@ -117,6 +150,10 @@ export class UDPSocket {
       // .5 seconds without a response, the robot may be disconnected
       this.isSocketConnected = false;
       this.events.emit(DSEvents.SocketConnectionChanged, "UDPSocket.sendPacket:timeout");
+
+      // Disable
+      this.state.enabled = false;
+      this.events.emit(DSEvents.RobotEnabledStateChanged, "UDPSocket.sendPacket:timeout");
     }
 
     if (startNextPacket) {
@@ -138,12 +175,11 @@ export class UDPSocket {
     this.state.codeRunning = ((msg.readUInt8(2) >> 3) & 0x01) !== 0x01;
 
     // Get battery
-    this.state.batteryVoltage = msg.readUInt8(5) + (msg.readUInt8(6) / 256);
+    this.state.batteryVoltage = msg.readUInt8(5) + (msg.readUInt8(6) / 256.0);
 
     // TODO rest of RoboRio's tags
 
     // Keep track of inbound packets
-    console.log(`Received message ${seq}`);
     this.lastReceivedPacketTimestamp = Date.now();
     
     if (!this.isSocketConnected) {
@@ -167,6 +203,7 @@ export class UDPSocket {
   public disconnect() {
     // Cancel interval
     clearInterval(this.packetTimeout);
+    clearInterval(this.reconnectTimeout);
 
     this.sendPacket(false); // Will flush most recent packet (usually a disable packet)
 

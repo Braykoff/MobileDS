@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors"
 import { DSConnection } from "@/util/ds/DSComms"
-import { useTimerRefresh } from "@/util/TimerHook"
+import { useTimerRefresh } from "@/util/hooks/TimerHook"
 import { StyleSheet, View, Text } from "react-native"
 import { RFPercentage } from "react-native-responsive-fontsize"
 import { scale } from "react-native-size-matters"
@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   batteryFill: {
-    backgroundColor: "red",
     width: "100%",
     position: "absolute",
     bottom: 0,

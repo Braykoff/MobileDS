@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CustomEventEmitter } from "./CustomEventEmitter";
+import { CustomEventEmitter } from "../CustomEventEmitter";
 
 /** Interface for objects that have a CustomEventEmitter */
 interface ObjectWithEvents {

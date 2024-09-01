@@ -1,6 +1,6 @@
 import { DSConnection } from "./DSComms";
 import { DSEvents } from "./DSEvents";
-import { useEvent } from "../EventHooks";
+import { useEvent } from "../hooks/EventHooks";
 import { ControlMode } from "./RobotState";
 
 /** Hooks on the DS's UDP and TCP socket last connection state change timestamp. */

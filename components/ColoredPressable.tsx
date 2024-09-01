@@ -29,19 +29,28 @@ interface ColoredPressableWithTextProps extends ColoredPressableProps {
   text: string,
   textStyle: StyleProp<TextStyle>,
   textHoveredStyle?: StyleProp<TextStyle>,
-  textNotHoveredStyle?: StyleProp<TextStyle>
+  textNotHoveredStyle?: StyleProp<TextStyle>,
+  afterPressIn?: () => void,
+  afterPressOut?: () => void
+}
+
+/** Invokes a method if it is not null or undefined */
+function invoke(method: ((...args: any[]) => void) | null | undefined) {
+  if (method !== null && method !== undefined) {
+    method();
+  }
 }
 
 /** A Pressable component with text that will change colors when hovered over. */
-export function ColoredPressableWithText({ defaultColor, hoverColor, style, notHoveredStyle, hoveredStyle, text, textStyle, textHoveredStyle, textNotHoveredStyle, ...rest }: ColoredPressableWithTextProps) {
+export function ColoredPressableWithText({ defaultColor, hoverColor, style, notHoveredStyle, hoveredStyle, text, textStyle, textHoveredStyle, textNotHoveredStyle, afterPressIn, afterPressOut, ...rest }: ColoredPressableWithTextProps) {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   return (
     <Pressable 
       onHoverIn={ () => setIsHovered(true) }
-      onPressIn={ () => setIsHovered(true) }
+      onPressIn={ () => { setIsHovered(true); invoke(afterPressIn); } }
       onHoverOut={ () => setIsHovered(false) }
-      onPressOut={ () => setIsHovered(false) }
+      onPressOut={ () => { setIsHovered(false); invoke(afterPressOut); } }
       style={[
         {backgroundColor: isHovered ? hoverColor : defaultColor},
         isHovered ? hoveredStyle : notHoveredStyle,

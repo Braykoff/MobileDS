@@ -1,6 +1,6 @@
 import { NTConnection, NTConnectionEvents } from "./NTComms";
 import { NTTopic } from "./NTData";
-import { useEvent } from "../EventHooks";
+import { useEvent } from "../hooks/EventHooks";
 
 /** Hook on the NT connection status. */
 export function useNTConnected(connection: NTConnection): boolean {
